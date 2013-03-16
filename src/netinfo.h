@@ -30,7 +30,6 @@
 #include <net/if.h>
 #include "mac.h"
 
-
 typedef struct {
 	   int sock;
 	   struct ifreq dev;
@@ -41,6 +40,5 @@ void        mc_net_info_free    (net_info_t *);
 
 mac_t      *mc_net_info_get_mac (const net_info_t *);
 int         mc_net_info_set_mac (net_info_t *, const mac_t *);
-
 
 #endif /* __MAC_CHANGER_NETINFO_H__ */
