@@ -1,14 +1,11 @@
-Welcome to the GNU MAC Changer Utilities package!           -*-text-*-
+# GNU MAC Changer
 
-This is a GNU/Linux utility for viewing/manipulating the MAC address
-of network interfaces.
+GNU MAC Changer is an utility that makes the maniputation of MAC
+addresses of network interfaces easier.
 
-
-Update and new releases
-=======================
-http://www.gnu.org/software/macchanger
-
-Old site: http://www.alobbs.com/macchanger
+ - Web site: http://www.gnu.org/software/macchanger
+ - Repository: http://github.com/alobbs/macchanger
 
 
+All the best,
 Alvaro Lopez Ortega <alvaro@alobbs.com>
