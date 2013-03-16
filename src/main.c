@@ -143,7 +143,7 @@ main (int argc, char *argv[])
 	int         ret;
 
 	/* Read the parameters */
-	while ((val = getopt_long (argc, argv, "VasArehlm:", long_options, NULL)) != -1) {
+	while ((val = getopt_long (argc, argv, "VasAbrehlm:", long_options, NULL)) != -1) {
 		switch (val) {
 		case 'V':
 			printf ("GNU MAC changer %s\n"
