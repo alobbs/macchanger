@@ -39,14 +39,14 @@ mc_net_info_new (const char *device)
 
 	new->sock = socket (AF_INET, SOCK_DGRAM, 0);
 	if (new->sock<0) {
-		perror ("socket");
+		perror ("[ERROR] Socket");
 		free(new);
 		return NULL;
 	}
 
 	strcpy (new->dev.ifr_name, device);
 	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
-		perror ("set device name");
+		perror ("[ERROR] Set device name");
 		free(new);
 		return NULL;
 	}
