@@ -96,7 +96,9 @@ mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list)
 void
 mc_maclist_set_random_vendor (mac_t *mac, mac_type_t type)
 {
-	int total, num;
+	int  num;
+	long total;
+
 	total = LIST_LENGTH (list_others) +
 		LIST_LENGTH (list_wireless);
 

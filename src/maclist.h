@@ -29,8 +29,8 @@
 #include "mac.h"
 
 typedef struct {
-	char  *name;
-	unsigned char byte[3];
+	char          *name;
+	unsigned char  byte[3];
 } card_mac_list_item_t;
 
 #define LIST_LENGTH(l)   ((sizeof(l) / sizeof(card_mac_list_item_t))-1)
