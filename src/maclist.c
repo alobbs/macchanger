@@ -171,7 +171,7 @@ mc_maclist_read_from_file (const char *fullpath)
 	card_mac_list_item_t *list;
 
 	if ((f = fopen(fullpath, "r")) == NULL) {
-		fprintf (stderr, "ERROR: Can't read MAC list file \"%s\", It looks like a bad installation\n", fullpath);
+		fprintf (stderr, "[ERROR] Could not read data file: %s\n", fullpath);
 		return NULL;
 	}
 
