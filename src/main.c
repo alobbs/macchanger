@@ -140,6 +140,7 @@ main (int argc, char *argv[])
 	mac_t      *mac_faked;
 	char       *device_name;
 	int         val;
+	int         ret;
 
 	/* Read the parameters */
 	while ((val = getopt_long (argc, argv, "VasArehlm:", long_options, NULL)) != -1) {
@@ -242,7 +243,8 @@ main (int argc, char *argv[])
 	}
 
 	/* Set the new MAC */
-	if (mc_net_info_set_mac (net, mac_faked) >= 0) {
+	ret = mc_net_info_set_mac (net, mac_faked);
+	if (ret == 0) {
 		/* Re-read the MAC */
 		mc_mac_free (mac_faked);
 		mac_faked = mc_net_info_get_mac(net);
@@ -262,5 +264,5 @@ main (int argc, char *argv[])
 	mc_net_info_free (net);
 	mc_maclist_free();
 
-	return EXIT_OK;
+	return (ret == 0) ? EXIT_OK : EXIT_ERROR;
 }
