@@ -26,6 +26,7 @@
 #ifndef __MAC_CHANGER_NETINFO_H__
 #define __MAC_CHANGER_NETINFO_H__
 
+#include <sys/socket.h>
 #include <net/if.h>
 #include "mac.h"
 
@@ -34,8 +35,6 @@ typedef struct {
 	   int sock;
 	   struct ifreq dev;
 } net_info_t;
-
-
 
 net_info_t *mc_net_info_new     (const char *device);
 void        mc_net_info_free    (net_info_t *);

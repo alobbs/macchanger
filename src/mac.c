@@ -117,7 +117,7 @@ mc_mac_read_string (mac_t *mac, char *string)
 
 	/* Check the format */
 	if (strlen(string) != 17) {
-		fprintf (stderr, "[ERROR] Incorrect format: MAC length should be 17. %s(%d)\n", string, strlen(string));
+		fprintf (stderr, "[ERROR] Incorrect format: MAC length should be 17. %s(%lu)\n", string, strlen(string));
 		return -1;
 	}
 

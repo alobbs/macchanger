@@ -66,7 +66,7 @@ mc_net_info_free (net_info_t *net)
 mac_t *
 mc_net_info_get_mac (const net_info_t *net)
 {
-	int i;
+	int    i;
 	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
 
 	for (i=0; i<6; i++) {

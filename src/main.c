@@ -67,7 +67,7 @@ print_usage (void)
 
 
 static void
-print_mac (char *s, mac_t *mac)
+print_mac (const char *s, const mac_t *mac)
 {
 	char string[18];
 	int  is_wireless;
