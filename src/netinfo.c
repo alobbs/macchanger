@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -50,7 +50,7 @@ mc_net_info_new (const char *device)
 		free(new);
 		return NULL;
 	}
-	   
+
 	return new;
 }
 
@@ -72,7 +72,7 @@ mc_net_info_get_mac (const net_info_t *net)
 	for (i=0; i<6; i++) {
 		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
 	}
-	   
+
 	return new;
 }
 
@@ -85,11 +85,11 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 	for (i=0; i<6; i++) {
 		net->dev.ifr_hwaddr.sa_data[i] = mac->byte[i];
 	}
-	
+
 	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) < 0) {
 		perror ("ERROR: Can't change MAC: interface up or not permission");
 		return -1;
 	}
-	
+
 	return 0;
 }

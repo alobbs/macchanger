@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -90,7 +90,7 @@ main (int argc, char *argv[])
 	char show         = 0;
 	char *set_mac     = NULL;
 	char *search_word = NULL;
-	
+
 	struct option long_options[] = {
 		/* Options without arguments */
 		{"help",        no_argument,       NULL, 'h'},
@@ -105,7 +105,7 @@ main (int argc, char *argv[])
 		{NULL, 0, NULL, 0}
 	};
 
-	
+
 	net_info_t *net;
 	mac_t      *mac;
 	mac_t      *mac_faked;
@@ -113,7 +113,7 @@ main (int argc, char *argv[])
 
 	int val;
 
-	
+
 	/* Read the parameters */
 	while ((val = getopt_long (argc, argv, "VasArehlm:", long_options, NULL)) != -1) {
 		switch (val) {
@@ -159,7 +159,7 @@ main (int argc, char *argv[])
 
 	/* Read the MAC lists */
 	if (mc_maclist_init() < 0) exit(1);
-	
+
 	/* Print list? */
 	if (print_list) {
 		mc_maclist_print(search_word);
@@ -172,8 +172,8 @@ main (int argc, char *argv[])
 		exit(0);
 	}
 	device_name = argv[optind];
-	
-	
+
+
 	srandom(time(NULL));
 
         /* Read the MAC */
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
 
 	/* Print the current MAC info */
 	print_mac ("Current MAC: ", mac);
-	
+
 	/* Change the MAC */
 	mac_faked = mc_mac_dup (mac);
 
@@ -213,18 +213,18 @@ main (int argc, char *argv[])
 
 		/* Print it */
 		print_mac ("Faked MAC:   ", mac_faked);
-		
+
 		/* Is the same MAC? */
 		if (mc_mac_equal (mac, mac_faked)) {
 			printf ("It's the same MAC!!\n");
 		}
 	}
-	
+
 	/* Memory free */
 	mc_mac_free (mac);
 	mc_mac_free (mac_faked);
 	mc_net_info_free (net);
 	mc_maclist_free();
-	
+
 	return 0;
 }

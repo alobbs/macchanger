@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,7 +47,7 @@ mc_maclist_get_cardname_from_list (const mac_t *mac, card_mac_list_item_t *list)
 			 }
 			 i++;
 	   }
-	   
+
 	   return NULL;
 }
 
@@ -85,7 +85,7 @@ mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list)
 
 	   /* Choose one randomly */
 	   num = random()%num;
-	   
+
 	   /* Copy the vender MAC range */
 	   for (i=0; i<3; i++) {
 			 mac->byte[i] = list[num].byte[i];
@@ -101,7 +101,7 @@ mc_maclist_set_random_vendor (mac_t *mac, mac_type_t type)
 		   LIST_LENGHT (list_wireless);
 
 	   num = random() % total;
-	   
+
 	   switch (type) {
 	   case mac_is_anykind:
 			 if (num < LIST_LENGHT(list_others)) {
@@ -174,9 +174,9 @@ mc_maclist_read_from_file (const char *fullpath)
 	}
 
 	/* Count lines */
-	while ((line = fgets (tmp, 511, f)) != NULL) num++;	
+	while ((line = fgets (tmp, 511, f)) != NULL) num++;
 	rewind (f);
-	
+
 	/* Get mem */
 	list = (card_mac_list_item_t *) malloc (sizeof(card_mac_list_item_t) * (num+1));
 
@@ -189,7 +189,7 @@ mc_maclist_read_from_file (const char *fullpath)
 
 		line[strlen(line)-1] = '\0';
 		list[num].name = (char*)(strdup(line+9));
-		
+
 		num ++;
 	}
 
@@ -231,4 +231,3 @@ mc_maclist_free (void)
 	free_list (list_others);
 	free_list (list_wireless);
 }
-

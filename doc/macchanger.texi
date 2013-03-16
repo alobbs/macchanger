@@ -12,7 +12,7 @@
 This file documents the GNU @code{macchanger} command for printing a
 greeting message.
 
-Copyright (C) 2003 Alvaro Lopez Ortega.
+Copyright (C) 2003,2013 Alvaro Lopez Ortega.
 
 @quotation
 Permission is granted to make and distribute verbatim copies of
@@ -56,13 +56,13 @@ approved by the Foundation.
 
 @end ifnottex
 
-This manual documents MacChanger version @value{VERSION}, a utility for 
+This manual documents MacChanger version @value{VERSION}, a utility for
 viewing/manipulating the MAC address of network interfaces.
 
 
 @menu
 * Overview::                    Overview of @command{macchanger}.
-* Features::                    
+* Features::
 * Invoking macchanger::         How to run @command{macchanger}.
 * Examples::                    Some example invocations.
 @end menu
