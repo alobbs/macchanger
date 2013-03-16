@@ -69,7 +69,10 @@ mc_mac_random (mac_t *mac, unsigned char last_n_bytes)
 
 	switch (last_n_bytes) {
 	case 6:
-		mac->byte[0] = (random()%255) & 0xFE;
+		/* 8th bit: Unicast / Multicast address
+		 * 7th bit: BIA (burned-in-address) / locally-administered
+		 */
+		mac->byte[0] = (random()%255) & 0xFC;
 	case 5:
 		mac->byte[1] = random()%255;
 	case 4:
