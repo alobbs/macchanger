@@ -23,6 +23,14 @@ depcomp
 Makefile.in
 aclocal.m4
 autom4te.cache
+Makefile
+config.h
+config.h.in
+config.log
+config.status
+configure
+.deps
+stamp-h1
 
 # Misc
 *~
