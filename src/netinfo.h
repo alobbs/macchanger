@@ -41,4 +41,6 @@ void        mc_net_info_free    (net_info_t *);
 mac_t      *mc_net_info_get_mac (const net_info_t *);
 int         mc_net_info_set_mac (net_info_t *, const mac_t *);
 
+mac_t      *mc_net_info_get_permanent_mac (const net_info_t *);
+
 #endif /* __MAC_CHANGER_NETINFO_H__ */

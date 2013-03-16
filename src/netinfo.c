@@ -29,6 +29,9 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+#include <linux/ethtool.h>
+#include <linux/sockios.h>
+
 #include "netinfo.h"
 
 
@@ -92,4 +95,33 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 	}
 
 	return 0;
+}
+
+mac_t *
+mc_net_info_get_permanent_mac (const net_info_t *net)
+{
+	int                       i;
+	struct ifreq              req;
+	struct ethtool_perm_addr *epa;
+	mac_t                    *newmac;
+
+	newmac = (mac_t *) calloc (1, sizeof(mac_t));
+
+	epa = (struct ethtool_perm_addr*) malloc(sizeof(struct ethtool_perm_addr) + IFHWADDRLEN);
+	epa->cmd = ETHTOOL_GPERMADDR;
+	epa->size = IFHWADDRLEN;
+
+	memcpy(&req, &(net->dev), sizeof(struct ifreq));
+	req.ifr_data = (caddr_t)epa;
+
+	if (ioctl(net->sock, SIOCETHTOOL, &req) < 0) {
+		perror ("[ERROR] Could not read permanent MAC");
+	} else {
+		for (i=0; i<6; i++) {
+			newmac->byte[i] = epa->data[i];
+		}
+	}
+
+	free(epa);
+	return newmac;
 }

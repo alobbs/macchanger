@@ -54,6 +54,7 @@ print_help (void)
 		"  -e,  --endding                Don't change the vendor bytes\n"
 		"  -a,  --another                Set random vendor MAC of the same kind\n"
 		"  -A                            Set random vendor MAC of any kind\n"
+		"  -p,  --permanent              Reset to original, permanent hardware MAC\n"
 		"  -r,  --random                 Set fully random MAC\n"
 		"  -l,  --list[=keyword]         Print known vendors\n"
 		"  -b,  --bia                    Pretend to be a burned-in-address\n"
@@ -114,6 +115,7 @@ main (int argc, char *argv[])
 	char endding      = 0;
 	char another_any  = 0;
 	char another_same = 0;
+	char permanent    = 0;
 	char print_list   = 0;
 	char show         = 0;
 	char set_bia      = 0;
@@ -127,6 +129,7 @@ main (int argc, char *argv[])
 		{"random",      no_argument,       NULL, 'r'},
 		{"endding",     no_argument,       NULL, 'e'},
 		{"another",     no_argument,       NULL, 'a'},
+		{"permanent",   no_argument,       NULL, 'p'},
 		{"show",        no_argument,       NULL, 's'},
 		{"another_any", no_argument,       NULL, 'A'},
 		{"bia",         no_argument,       NULL, 'b'},
@@ -137,13 +140,14 @@ main (int argc, char *argv[])
 
 	net_info_t *net;
 	mac_t      *mac;
+	mac_t      *mac_permanent;
 	mac_t      *mac_faked;
 	char       *device_name;
 	int         val;
 	int         ret;
 
 	/* Read the parameters */
-	while ((val = getopt_long (argc, argv, "VasAbrehlm:", long_options, NULL)) != -1) {
+	while ((val = getopt_long (argc, argv, "VasAbrephlm:", long_options, NULL)) != -1) {
 		switch (val) {
 		case 'V':
 			printf ("GNU MAC changer %s\n"
@@ -175,6 +179,9 @@ main (int argc, char *argv[])
 			break;
 		case 'A':
 			another_any = 1;
+			break;
+		case 'p':
+			permanent = 1;
 			break;
 		case 'm':
 			set_mac = optarg;
@@ -214,9 +221,11 @@ main (int argc, char *argv[])
 		exit (EXIT_ERROR);
 	}
 	mac = mc_net_info_get_mac(net);
+	mac_permanent = mc_net_info_get_permanent_mac(net);
 
 	/* Print the current MAC info */
-	print_mac ("Current MAC: ", mac);
+	print_mac ("Current MAC:   ", mac);
+	print_mac ("Permanent MAC: ", mac_permanent);
 
 	/* Change the MAC */
 	mac_faked = mc_mac_dup (mac);
@@ -238,6 +247,8 @@ main (int argc, char *argv[])
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
 		mc_mac_random (mac_faked, 3, set_bia);
+	} else if (permanent) {
+		mac_faked = mc_mac_dup (mac_permanent);
 	} else {
 		mc_mac_next (mac_faked);
 	}
@@ -250,7 +261,7 @@ main (int argc, char *argv[])
 		mac_faked = mc_net_info_get_mac(net);
 
 		/* Print it */
-		print_mac ("Faked MAC:   ", mac_faked);
+		print_mac ("New MAC:       ", mac_faked);
 
 		/* Is the same MAC? */
 		if (mc_mac_equal (mac, mac_faked)) {
@@ -261,6 +272,7 @@ main (int argc, char *argv[])
 	/* Memory free */
 	mc_mac_free (mac);
 	mc_mac_free (mac_faked);
+	mc_mac_free (mac_permanent);
 	mc_net_info_free (net);
 	mc_maclist_free();
 

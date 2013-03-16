@@ -82,6 +82,7 @@ address of network interfaces.
 @item Set a MAC of another vendor
 @item Set another MAC of the same vendor
 @item Set a MAC of the same kind (eg: wireless card)
+@item Reset MAC address to its original, permanent hardware value
 @item Display a vendor MAC list (today, 6200 items) to choose from
 @end itemize
 
@@ -135,6 +136,12 @@ Change the MAC address setting a random vendor MAC of any kind.
 @itemx --random
 @cindex @code{--random}
 Set fully random MAC address: Any kind and any vendor.
+
+@item -p
+@cindex @code{-p}
+@itemx --permanent
+@cindex @code{--permanent}
+Reset MAC address to its original, permanent hardware value.
 
 @item -l
 @cindex @code{-l}
