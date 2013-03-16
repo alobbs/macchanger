@@ -33,7 +33,7 @@ typedef struct {
 	unsigned char byte[3];
 } card_mac_list_item_t;
 
-#define LIST_LENGHT(l)   ((sizeof(l) / sizeof(card_mac_list_item_t))-1)
+#define LIST_LENGTH(l)   ((sizeof(l) / sizeof(card_mac_list_item_t))-1)
 #define CARD_NAME(x)     mc_maclist_get_cardname_with_default(x, "unknown")
 
 int    mc_maclist_init  (void);
