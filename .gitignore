@@ -32,5 +32,10 @@ configure
 .deps
 stamp-h1
 
+# Documentation
+macchanger.info
+stamp-vti
+version.texi
+
 # Misc
 *~
