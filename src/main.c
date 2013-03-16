@@ -27,10 +27,14 @@
 # include <config.h>
 #endif
 
-#include <time.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/time.h>
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "mac.h"
 #include "maclist.h"
@@ -79,6 +83,27 @@ print_mac (const char *s, const mac_t *mac)
 		string,
 		is_wireless ? " [wireless]": "",
 		CARD_NAME(mac));
+}
+
+
+static void
+random_seed (void)
+{
+	int            fd;
+	struct timeval tv;
+	unsigned int   seed;
+
+	if ((fd = open("/dev/urandom", O_RDONLY)) >= 0 ||
+	    (fd = open("/dev/random", O_RDONLY)) >= 0)
+	{
+		read (fd, &seed, sizeof(seed));
+		close (fd);
+	} else {
+		gettimeofday (&tv, NULL);
+		seed = (getpid() << 16) ^ tv.tv_sec ^ tv.tv_usec;
+	}
+
+	srandom(seed);
 }
 
 
@@ -180,8 +205,8 @@ main (int argc, char *argv[])
 	}
 	device_name = argv[optind];
 
-
-	srandom(time(NULL));
+	/* Seed a random number generator */
+	random_seed();
 
         /* Read the MAC */
 	if ((net = mc_net_info_new(device_name)) == NULL) {
