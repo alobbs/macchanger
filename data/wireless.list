@@ -1,0 +1,40 @@
+00 00 8F Raytheon Raylink/WebGear Aviator2.4
+00 00 F0 Samsung MagicLan (+ some other PrismII cards)
+00 00 F1 Raytheon Raylink/WebGear Aviator2.4
+00 01 03 3Com 3CRWE62092A
+00 02 2D Lucent (WaveLAN, Orinoco, Silver/Gold), Orinoco (Silver, PC24E), Buffalo and Avaya
+00 02 6F Senao SL-2011CD
+00 02 78 Samsung MagicLan (+ some other PrismII cards)
+00 02 A5 Compaq WL110
+00 03 2F Linksys WPC11, Repotec GL241101
+00 04 5A Linksys WPC11, WUSB11
+00 04 75 3Com 3CRWE62092B
+00 04 E2 SMC SMC2632W
+00 05 5D D-Link DWL-650, DWL-650H
+00 06 25 Linksys WPC11 v2.5, D-Link DCF-650W, Linksys WPC11 v3
+00 07 0E Cisco AIR-PCM352
+00 07 50 Cisco AIR-LMC352
+00 08 21 Cisco	AIR-PCM352
+00 09 43 Cisco	AIR-LMC352
+00 09 5B Netgear MA701, MA401RA
+00 09 7C Cisco	AIR-LMC352
+00 09 E8 Cisco	AIR-LMC352
+00 0A 41 Cisco	AIR-PCM352
+00 0A 8A Cisco	AIR-PCM352
+00 30 65 Apple	Airport Card 2002
+00 30 AB Netgear MA401
+00 30 BD Belkin F5D6020
+00 40 96 Cisco	AIR-PC4800, 350, AIR-PCM340, AIR-PCM352
+00 50 08 Compaq WL100
+00 50 DA 3Com 3CRWE73796B
+00 60 01 Lucent WaveLAN Silver
+00 60 1D Lucent WaveLAN Bronze, WaveLAN Gold, Silver, Orinoco Gold
+00 60 6D Cabletron CSIBB-AA
+00 60 B3 SMC SMC2642W
+00 80 C7 Netwave (Xircom Netwave/Netwave Airsurfer)
+00 90 D1 LeArtery SyncByAir LN101
+00 A0 F8 Symbol Spectrum24
+00 0C F1 Intel Pro 2100
+00 E0 29 OEM OEM
+08 00 0E Old Lucent Wavelan
+08 00 46 Sony PCWA-C100

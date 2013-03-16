@@ -1,0 +1,67 @@
+2004-05-10  Alvaro Lopez Ortega  <alvaro@gnu.org>
+
+	* data/OUI.list: 513 addresses updated.
+
+	* src/mac.c (mc_mac_random): The random MAC address feature will
+	not set multicast MACs anymore.
+
+	* Released 1.5.0
+
+
+2004-04-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Added new wireless address. Sent by <r1k0@host.sk>
+
+
+2003-10-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* tools/IEEE_OUI.py: Mostly rewritten.
+
+	* data/OUI.list: Added 660 new MAC addresses
+
+	* Released 1.4.0
+
+
+2003-10-03  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* doc/macchanger.texi: Added GNU Textinfo manual
+
+	* src/main.c (main): Added "--show" parameter.
+
+
+2003-01-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Released 1.3.0
+
+	* data/wireless.list: Added new wireless cards
+	
+	
+2002-12-03  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+	
+	* Released 1.2.0
+	
+	* src/list_data.h: removed
+
+	* data/OUI.list, data/wireless.list: Added new data files with the
+	MAC addresses
+
+	* src/mac.h, src/list.h: clean up
+	
+	* src/list.[ch]: renamed to maclist.[ch]
+
+	
+
+2002-12-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Released 1.1.0
+	
+	* src/list_data.h: Added 'IEEE OUI' MAC list
+	
+	* src/main.c, configure.in: Changed name. From macc to macchanger
+	to fix the problem of the Debian package
+
+
+2002-12-01  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Released 1.0.0: Initial version 
+

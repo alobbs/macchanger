@@ -1,0 +1,71 @@
+.\"                              hey, Emacs:   -*- nroff -*-
+.\" macc is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; see the file COPYING.  If not, write to
+.\" the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.TH MACC 1 "December 1, 2002"
+.\" Please update the above date whenever this man page is modified.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins (default)
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+macchanger \- MAC Changer
+.SH SYNOPSIS
+.B macchanger 
+.RI [ options ]
+.RI device
+.SH DESCRIPTION
+\fBmacchanger\fP is a Linux utility for viewing/manipulating the MAC address for network interfaces.
+.\" .PP
+.\" It also...
+.SH OPTIONS
+\fBmacchanger\fP accepts the following options:
+.TP
+.B \-h, \-\-help
+Show summary of options.
+.TP
+.B \-V, \-\-version
+Show version of program.
+.TP
+.B \-e, \-\-endding
+Don't change the vendor bytes.
+.TP
+.B \-a, \-\-another
+Set random vendor MAC of the same kind.
+.TP
+.B \-A
+Set random vendor MAC of any kind.
+.TP
+.B \-r, \-\-random
+Set fully random MAC.
+.TP
+.B \-l, \-\-list[=keyword]
+Print known vendors (with keyword in the vendor's description string)
+.TP
+.B \-m, \-\-mac XX:XX:XX:XX:XX:XX
+Set the MAC XX:XX:XX:XX:XX:XX
+.SH EXAMPLE
+macchanger -A eth1
+.SH "SEE ALSO"
+ifconfig (8)
+.\" .BR foo (1), 
+.SH AUTHOR
+Alvaro Lopez Ortega <alvaro@alobbs.com>.

@@ -1,0 +1,171 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename macchanger.info
+@settitle MacChanger @value{VERSION}
+@finalout
+@setchapternewpage odd
+@c %**end of header
+
+@include version.texi
+
+@copying
+This file documents the GNU @code{macchanger} command for printing a
+greeting message.
+
+Copyright (C) 2003 Alvaro Lopez Ortega.
+
+@quotation
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the Foundation.
+@end quotation
+@end copying
+
+@dircategory Networking
+
+@direntry
+* macchanger: (macchanger).             Utility for viewing MAC address
+@end direntry
+
+@titlepage
+@title GNU Macchanger
+@subtitle Utility for viewing/manipulating the MAC address of network interfaces
+@author by Alvaro Lopez Ortega @email{alvaro@@alobbs.com}
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top Stress
+
+@end ifnottex
+
+This manual documents MacChanger version @value{VERSION}, a utility for 
+viewing/manipulating the MAC address of network interfaces.
+
+
+@menu
+* Overview::                    Overview of @command{macchanger}.
+* Features::                    
+* Invoking macchanger::         How to run @command{macchanger}.
+* Examples::                    Some example invocations.
+@end menu
+
+@node Overview
+@chapter Overview of @command{macchanger}
+The GNU @code{macchanger} utility helps to view and manipulate the MAC
+address of network interfaces.
+
+
+@node Features
+@chapter Features
+
+@itemize @bullet
+@item Set specific MAC address of a network interface
+@item Set the MAC randomly
+@item Set a MAC of another vendor
+@item Set another MAC of the same vendor
+@item Set a MAC of the same kind (eg: wireless card)
+@item Display a vendor MAC list (today, 6200 items) to choose from
+@end itemize
+
+
+@node Invoking macchanger
+@chapter Invoking macchanger
+The program accepts the following options.
+
+@table @samp
+
+@item -h
+@cindex @code{-h}
+@itemx --help
+@cindex @code{--help}
+Print a usage message briefly summarizing these command-line options
+and the bug-reporting address, then exit.
+
+@item -V
+@cindex @code{-V}
+@itemx --version
+@cindex @code{--version}
+Print the version number of @command{macchanger} to the standard output stream.
+This version number should be included in all bug reports.
+
+@item -s
+@cindex @code{-s}
+@itemx --show
+@cindex @code{--show}
+Print the current MAC address and exit.
+
+@item -e
+@cindex @code{-e}
+@itemx --endding
+@cindex @code{--endding}
+Change the MAC address setting the same hardware vendor as the current.
+
+@item -a
+@cindex @code{-a}
+@itemx --another
+@cindex @code{--another}
+Change the MAC address setting a random vendor MAC of the same
+kind. For example, if it's a wireless card, @command{macchanger} will
+set another wireless MAC address.
+
+@item -A
+@cindex @code{-A}
+Change the MAC address setting a random vendor MAC of any kind.
+
+@item -r
+@cindex @code{-r}
+@itemx --random
+@cindex @code{--random}
+Set fully random MAC address: Any kind and any vendor.
+
+@item -l
+@cindex @code{-l}
+@itemx --list[=@var{keyword}]
+@cindex @code{--list}
+Print known vendors. If a key is spefified, @command{macchanger} will
+print only vendor that matches the string.
+
+@item -m
+@cindex @code{-m}
+@itemx --mac=@var{XX:XX:XX:XX:XX:XX}
+@cindex @code{--mac}
+Set a specific MAC address. Each XX must be an hexadecial value (00 to
+FF).
+
+@end table
+
+@node Examples
+@chapter Example invocations
+
+The simple case is that you just want change the hardware address of
+the first ethernet network interface for a fully random one:
+
+# @samp{macchanger -r eth0}
+
+Long options are supported. The following change the MAC address for
+another one of the same kind (for example, wireless):
+
+# @samp{macchanger -a wifi0}
+
+To execute this examples, the interface must be down, otherwise
+@command{macchanger} will be exit with an error message.
+
+@bye
