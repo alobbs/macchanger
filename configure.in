@@ -9,4 +9,8 @@ AC_SUBST(VERSION)
 AC_PROG_INSTALL
 AC_PROG_CC
 
-AC_OUTPUT(Makefile src/Makefile data/Makefile doc/Makefile)
+AC_OUTPUT([
+Makefile
+src/Makefile
+data/Makefile
+doc/Makefile])
