@@ -87,7 +87,7 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 	}
 
 	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) < 0) {
-		perror ("ERROR: Can't change MAC: interface up or not permission");
+		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
 		return -1;
 	}
 

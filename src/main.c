@@ -107,14 +107,11 @@ main (int argc, char *argv[])
 		{NULL, 0, NULL, 0}
 	};
 
-
 	net_info_t *net;
 	mac_t      *mac;
 	mac_t      *mac_faked;
 	char       *device_name;
-
-	int val;
-
+	int         val;
 
 	/* Read the parameters */
 	while ((val = getopt_long (argc, argv, "VasArehlm:", long_options, NULL)) != -1) {
@@ -203,8 +200,8 @@ main (int argc, char *argv[])
 	} else if (endding) {
 		mc_mac_random (mac_faked, 3);
 	} else if (another_same) {
-		int wl = mc_maclist_is_wireless(mac);
-		mc_maclist_set_random_vendor(mac_faked, wl);
+		val = mc_maclist_is_wireless (mac);
+		mc_maclist_set_random_vendor (mac_faked, val);
 		mc_mac_random (mac_faked, 3);
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
