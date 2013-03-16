@@ -53,6 +53,7 @@ void
 mc_mac_into_string (const mac_t *mac, char *s)
 {
 	int i;
+
 	for (i=0; i<6; i++) {
 		sprintf (&s[i*3], "%02x%s", mac->byte[i], i<5?":":"");
 	}
@@ -60,7 +61,7 @@ mc_mac_into_string (const mac_t *mac, char *s)
 
 
 void
-mc_mac_random (mac_t *mac, unsigned char last_n_bytes)
+mc_mac_random (mac_t *mac, unsigned char last_n_bytes, char set_bia)
 {
 	/* The LSB of first octet can not be set.  Those are musticast
 	 * MAC addresses and not allowed for network device:
@@ -73,16 +74,20 @@ mc_mac_random (mac_t *mac, unsigned char last_n_bytes)
 		 * 7th bit: BIA (burned-in-address) / locally-administered
 		 */
 		mac->byte[0] = (random()%255) & 0xFC;
-	case 5:
 		mac->byte[1] = random()%255;
-	case 4:
 		mac->byte[2] = random()%255;
 	case 3:
 		mac->byte[3] = random()%255;
-	case 2:
 		mac->byte[4] = random()%255;
-	case 1:
 		mac->byte[5] = random()%255;
+	}
+
+	/* Handle the burned-in-address bit
+	 */
+	if (set_bia) {
+		mac->byte[0] &= ~2;
+	} else {
+		mac->byte[0] |= 2;
 	}
 }
 
@@ -91,6 +96,7 @@ int
 mc_mac_equal (const mac_t *mac1, const mac_t *mac2)
 {
 	int i;
+
 	for (i=0; i<6; i++) {
 		if (mac1->byte[i] != mac2->byte[i]) {
 			return 0;

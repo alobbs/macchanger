@@ -52,6 +52,7 @@ print_help (void)
 		"  -A                            Set random vendor MAC of any kind\n"
 		"  -r,  --random                 Set fully random MAC\n"
 		"  -l,  --list[=keyword]         Print known vendors\n"
+		"  -b,  --bia                    Pretend to be a burned-in-address\n"
 		"  -m,  --mac=XX:XX:XX:XX:XX:XX  Set the MAC XX:XX:XX:XX:XX:XX\n\n"
 		"Report bugs to https://github.com/alobbs/macchanger/issues\n");
 }
@@ -90,6 +91,7 @@ main (int argc, char *argv[])
 	char another_same = 0;
 	char print_list   = 0;
 	char show         = 0;
+	char set_bia      = 0;
 	char *set_mac     = NULL;
 	char *search_word = NULL;
 
@@ -102,6 +104,7 @@ main (int argc, char *argv[])
 		{"another",     no_argument,       NULL, 'a'},
 		{"show",        no_argument,       NULL, 's'},
 		{"another_any", no_argument,       NULL, 'A'},
+		{"bia",         no_argument,       NULL, 'b'},
 		{"list",        optional_argument, NULL, 'l'},
 		{"mac",         required_argument, NULL, 'm'},
 		{NULL, 0, NULL, 0}
@@ -134,6 +137,9 @@ main (int argc, char *argv[])
 			break;
 		case 'e':
 			endding = 1;
+			break;
+		case 'b':
+			set_bia = 1;
 			break;
 		case 'a':
 			another_same = 1;
@@ -196,16 +202,16 @@ main (int argc, char *argv[])
 			exit (EXIT_ERROR);
 		}
 	} else if (random) {
-		mc_mac_random (mac_faked, 6);
+		mc_mac_random (mac_faked, 6, set_bia);
 	} else if (endding) {
-		mc_mac_random (mac_faked, 3);
+		mc_mac_random (mac_faked, 3, set_bia);
 	} else if (another_same) {
 		val = mc_maclist_is_wireless (mac);
 		mc_maclist_set_random_vendor (mac_faked, val);
-		mc_mac_random (mac_faked, 3);
+		mc_mac_random (mac_faked, 3, set_bia);
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
-		mc_mac_random (mac_faked, 3);
+		mc_mac_random (mac_faked, 3, set_bia);
 	} else {
 		mc_mac_next (mac_faked);
 	}
