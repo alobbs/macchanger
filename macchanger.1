@@ -63,10 +63,13 @@ Print known vendors (with keyword in the vendor's description string)
 .B \-b, \-\-bia
 Pretend to be a burned-in-address. If not used, the MAC will have the locally-administered bit set.
 .TP
-.B \-m, \-\-mac XX:XX:XX:XX:XX:XX
+.B \-m, \-\-mac XX:XX:XX:XX:XX:XX, \-\-mac=XX:XX:XX:XX:XX:XX
 Set the MAC XX:XX:XX:XX:XX:XX
+.TP
+.B \-s, \-\-show
+Prints the current MAC
 .SH EXAMPLE
-macchanger -A eth1
+macchanger \-A eth1
 .SH "SEE ALSO"
 ifconfig (8)
 .\" .BR foo (1),
