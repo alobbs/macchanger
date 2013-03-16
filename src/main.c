@@ -24,7 +24,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+# include <config.h>
 #endif
 
 #include <time.h>
@@ -36,6 +36,8 @@
 #include "maclist.h"
 #include "netinfo.h"
 
+#define EXIT_OK    0
+#define EXIT_ERROR 1
 
 static void
 print_help (void)
@@ -51,7 +53,7 @@ print_help (void)
 		"  -r,  --random                 Set fully random MAC\n"
 		"  -l,  --list[=keyword]         Print known vendors\n"
 		"  -m,  --mac=XX:XX:XX:XX:XX:XX  Set the MAC XX:XX:XX:XX:XX:XX\n\n"
-		"Report bugs to alvaro@gnu.org\n");
+		"Report bugs to https://github.com/alobbs/macchanger/issues\n");
 }
 
 
@@ -120,11 +122,11 @@ main (int argc, char *argv[])
 		case 'V':
 			printf ("GNU MAC changer %s\n"
 				"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"
-				"Copyright (C) 2003 Free Software Foundation, Inc.\n"
+				"Copyright (C) 2003,2013 Alvaro Lopez Ortega <alvaro@gnu.org>.\n"
 				"This is free software; see the source for copying conditions.  There is NO\n"
 				"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
 				VERSION);
-			exit(0);
+			exit (EXIT_OK);
 			break;
 		case 'l':
 			print_list = 1;
@@ -152,24 +154,26 @@ main (int argc, char *argv[])
 		case '?':
 		default:
 			print_help();
-			exit(0);
+			exit (EXIT_OK);
 			break;
 		}
 	}
 
 	/* Read the MAC lists */
-	if (mc_maclist_init() < 0) exit(1);
+	if (mc_maclist_init() < 0) {
+		exit (EXIT_ERROR);
+	}
 
 	/* Print list? */
 	if (print_list) {
 		mc_maclist_print(search_word);
-		exit(0);
+		exit (EXIT_OK);
 	}
 
 	/* Get device name argument */
 	if (optind >= argc) {
 		print_usage();
-		exit(0);
+		exit (EXIT_OK);
 	}
 	device_name = argv[optind];
 
@@ -177,7 +181,9 @@ main (int argc, char *argv[])
 	srandom(time(NULL));
 
         /* Read the MAC */
-	if ((net = mc_net_info_new(device_name)) == NULL) exit(1);
+	if ((net = mc_net_info_new(device_name)) == NULL) {
+		exit (EXIT_ERROR);
+	}
 	mac = mc_net_info_get_mac(net);
 
 	/* Print the current MAC info */
@@ -187,9 +193,11 @@ main (int argc, char *argv[])
 	mac_faked = mc_mac_dup (mac);
 
 	if (show) {
-		exit (0);
+		exit (EXIT_OK);
 	} else if (set_mac) {
-		if (mc_mac_read_string (mac_faked, set_mac) < 0) exit(1);
+		if (mc_mac_read_string (mac_faked, set_mac) < 0) {
+			exit (EXIT_ERROR);
+		}
 	} else if (random) {
 		mc_mac_random (mac_faked, 6);
 	} else if (endding) {
@@ -226,5 +234,5 @@ main (int argc, char *argv[])
 	mc_net_info_free (net);
 	mc_maclist_free();
 
-	return 0;
+	return EXIT_OK;
 }
