@@ -2,24 +2,24 @@
 #
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
-# 
-# Copyright (C) 2002,2003 Alvaro Lopez Ortega
-# 
+#
+# Copyright (C) 2002,2003,2013 Alvaro Lopez Ortega
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
 # published by the Free Software Foundation; either version 2 of the
 # License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
-# 
+#
 
 from sys import stdout
 from string import split, join, capitalize
@@ -37,7 +37,7 @@ def download ():
     while 1:
         chunk = http.read(1024)
         length = len(chunk)
-        
+
         if length == 0: break
         buffer = buffer + chunk
 
@@ -59,7 +59,7 @@ except IOError:
 try:
     f = open ("oui.txt", "r")
     print "Reading file oui.txt"
-    content = f.read()    
+    content = f.read()
     f.close()
 except IOError:
     print "Downloading file %s" % (URL)

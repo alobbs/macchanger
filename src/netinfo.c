@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +29,9 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+#include <linux/ethtool.h>
+#include <linux/sockios.h>
+
 #include "netinfo.h"
 
 
@@ -39,18 +42,18 @@ mc_net_info_new (const char *device)
 
 	new->sock = socket (AF_INET, SOCK_DGRAM, 0);
 	if (new->sock<0) {
-		perror ("socket");
+		perror ("[ERROR] Socket");
 		free(new);
 		return NULL;
 	}
 
 	strcpy (new->dev.ifr_name, device);
 	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
-		perror ("set device name");
+		perror ("[ERROR] Set device name");
 		free(new);
 		return NULL;
 	}
-	   
+
 	return new;
 }
 
@@ -66,13 +69,13 @@ mc_net_info_free (net_info_t *net)
 mac_t *
 mc_net_info_get_mac (const net_info_t *net)
 {
-	int i;
+	int    i;
 	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
 
 	for (i=0; i<6; i++) {
 		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
 	}
-	   
+
 	return new;
 }
 
@@ -85,11 +88,40 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 	for (i=0; i<6; i++) {
 		net->dev.ifr_hwaddr.sa_data[i] = mac->byte[i];
 	}
-	
+
 	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) < 0) {
-		perror ("ERROR: Can't change MAC: interface up or not permission");
+		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
 		return -1;
 	}
-	
+
 	return 0;
+}
+
+mac_t *
+mc_net_info_get_permanent_mac (const net_info_t *net)
+{
+	int                       i;
+	struct ifreq              req;
+	struct ethtool_perm_addr *epa;
+	mac_t                    *newmac;
+
+	newmac = (mac_t *) calloc (1, sizeof(mac_t));
+
+	epa = (struct ethtool_perm_addr*) malloc(sizeof(struct ethtool_perm_addr) + IFHWADDRLEN);
+	epa->cmd = ETHTOOL_GPERMADDR;
+	epa->size = IFHWADDRLEN;
+
+	memcpy(&req, &(net->dev), sizeof(struct ifreq));
+	req.ifr_data = (caddr_t)epa;
+
+	if (ioctl(net->sock, SIOCETHTOOL, &req) < 0) {
+		perror ("[ERROR] Could not read permanent MAC");
+	} else {
+		for (i=0; i<6; i++) {
+			newmac->byte[i] = epa->data[i];
+		}
+	}
+
+	free(epa);
+	return newmac;
 }

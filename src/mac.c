@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -53,6 +53,7 @@ void
 mc_mac_into_string (const mac_t *mac, char *s)
 {
 	int i;
+
 	for (i=0; i<6; i++) {
 		sprintf (&s[i*3], "%02x%s", mac->byte[i], i<5?":":"");
 	}
@@ -60,26 +61,33 @@ mc_mac_into_string (const mac_t *mac, char *s)
 
 
 void
-mc_mac_random (mac_t *mac, unsigned char last_n_bytes)
+mc_mac_random (mac_t *mac, unsigned char last_n_bytes, char set_bia)
 {
 	/* The LSB of first octet can not be set.  Those are musticast
-	 * MAC addresses and not allowed for network device: 
+	 * MAC addresses and not allowed for network device:
 	 * x1:, x3:, x5:, x7:, x9:, xB:, xD: and xF:
 	 */
 
 	switch (last_n_bytes) {
 	case 6:
-		mac->byte[0] = (random()%255) & 0xFE;
-	case 5:
+		/* 8th bit: Unicast / Multicast address
+		 * 7th bit: BIA (burned-in-address) / locally-administered
+		 */
+		mac->byte[0] = (random()%255) & 0xFC;
 		mac->byte[1] = random()%255;
-	case 4:
 		mac->byte[2] = random()%255;
 	case 3:
 		mac->byte[3] = random()%255;
-	case 2:
 		mac->byte[4] = random()%255;
-	case 1:
 		mac->byte[5] = random()%255;
+	}
+
+	/* Handle the burned-in-address bit
+	 */
+	if (set_bia) {
+		mac->byte[0] &= ~2;
+	} else {
+		mac->byte[0] |= 2;
 	}
 }
 
@@ -88,6 +96,7 @@ int
 mc_mac_equal (const mac_t *mac1, const mac_t *mac2)
 {
 	int i;
+
 	for (i=0; i<6; i++) {
 		if (mac1->byte[i] != mac2->byte[i]) {
 			return 0;
@@ -117,21 +126,21 @@ mc_mac_read_string (mac_t *mac, char *string)
 
 	/* Check the format */
 	if (strlen(string) != 17) {
-		fprintf (stderr, "ERROR: Incorrect format: MAC lenght is 17. %s(%d)\n", string, strlen(string));
+		fprintf (stderr, "[ERROR] Incorrect format: MAC length should be 17. %s(%lu)\n", string, strlen(string));
 		return -1;
 	}
-	
+
 	for (nbyte=2; nbyte<16; nbyte+=3) {
 		if (string[nbyte] != ':') {
-			fprintf (stderr, "Incorrect format: %s\n", string);
+			fprintf (stderr, "[ERROR] Incorrect format: %s\n", string);
 			return -1;
 		}
 	}
-	
+
 	/* Read the values */
 	for (nbyte=0; nbyte<6; nbyte++) {
 		mac->byte[nbyte] = (char) (strtoul(string+nbyte*3, 0, 16) & 0xFF);
 	}
-	
+
 	return 0;
 }

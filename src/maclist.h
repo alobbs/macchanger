@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,11 +29,11 @@
 #include "mac.h"
 
 typedef struct {
-	char  *name;
-	unsigned char byte[3];
+	char          *name;
+	unsigned char  byte[3];
 } card_mac_list_item_t;
 
-#define LIST_LENGHT(l)   ((sizeof(l) / sizeof(card_mac_list_item_t))-1)
+#define LIST_LENGTH(l)   ((sizeof(l) / sizeof(card_mac_list_item_t))-1)
 #define CARD_NAME(x)     mc_maclist_get_cardname_with_default(x, "unknown")
 
 int    mc_maclist_init  (void);

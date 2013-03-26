@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ void    mc_mac_into_string (const mac_t *, char *);
 int     mc_mac_equal       (const mac_t *, const mac_t *);
 mac_t  *mc_mac_dup         (const mac_t *);
 void    mc_mac_free        (mac_t *);
-void    mc_mac_random      (mac_t *, unsigned char last_n_bytes);
+void    mc_mac_random      (mac_t *, unsigned char last_n_bytes, char set_bia);
 void    mc_mac_next        (mac_t *);
 
 #endif /* __MAC_CHANGER_LISTA_H__ */

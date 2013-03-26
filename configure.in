@@ -1,5 +1,7 @@
 AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(macchanger, 1.5.0)
+AM_INIT_AUTOMAKE(macchanger, 1.6.0)
+
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AM_CONFIG_HEADER(config.h)
 AC_SUBST(VERSION)
@@ -7,4 +9,8 @@ AC_SUBST(VERSION)
 AC_PROG_INSTALL
 AC_PROG_CC
 
-AC_OUTPUT(Makefile src/Makefile data/Makefile doc/Makefile)
+AC_OUTPUT([
+Makefile
+src/Makefile
+data/Makefile
+doc/Makefile])

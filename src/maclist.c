@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,34 +36,34 @@ card_mac_list_item_t *list_wireless = NULL; /* Wireless cards */
 static char *
 mc_maclist_get_cardname_from_list (const mac_t *mac, card_mac_list_item_t *list)
 {
-	   int i = 0;
+	int i = 0;
 
-	   while (list[i].name) {
-			 if ((mac->byte[0] == list[i].byte[0]) &&
-				(mac->byte[1] == list[i].byte[1]) &&
-				(mac->byte[2] == list[i].byte[2]))
-			 {
-				    return list[i].name;
-			 }
-			 i++;
-	   }
-	   
-	   return NULL;
+	while (list[i].name) {
+		if ((mac->byte[0] == list[i].byte[0]) &&
+		    (mac->byte[1] == list[i].byte[1]) &&
+		    (mac->byte[2] == list[i].byte[2]))
+		{
+			return list[i].name;
+		}
+		i++;
+	}
+
+	return NULL;
 }
 
 
 static char *
 mc_maclist_get_cardname (const mac_t *mac)
 {
-	   char *name;
+	char *name;
 
-	   name = mc_maclist_get_cardname_from_list (mac, list_wireless);
-	   if (name) {
-			 return name;
-	   }
+	name = mc_maclist_get_cardname_from_list (mac, list_wireless);
+	if (name) {
+		return name;
+	}
 
-	   name = mc_maclist_get_cardname_from_list (mac, list_others);
-	   return name;
+	name = mc_maclist_get_cardname_from_list (mac, list_others);
+	return name;
 }
 
 
@@ -78,84 +78,86 @@ mc_maclist_get_cardname_with_default (const mac_t *mac, const char *def)
 static void
 mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list)
 {
-	   int i, num = 0;
+	int i, num = 0;
 
-	   /* Count */
-	   while (list[++num].name);
+	/* Count */
+	while (list[++num].name);
 
-	   /* Choose one randomly */
-	   num = random()%num;
-	   
-	   /* Copy the vender MAC range */
-	   for (i=0; i<3; i++) {
-			 mac->byte[i] = list[num].byte[i];
-	   }
+	/* Choose one randomly */
+	num = random()%num;
+
+	/* Copy the vender MAC range */
+	for (i=0; i<3; i++) {
+		mac->byte[i] = list[num].byte[i];
+	}
 }
 
 
 void
 mc_maclist_set_random_vendor (mac_t *mac, mac_type_t type)
 {
-	   int total, num;
-	   total = LIST_LENGHT (list_others) +
-		   LIST_LENGHT (list_wireless);
+	unsigned long num;
+	long          total;
 
-	   num = random() % total;
-	   
-	   switch (type) {
-	   case mac_is_anykind:
-			 if (num < LIST_LENGHT(list_others)) {
-				    mc_maclist_set_random_vendor_from_list (mac, list_others);
-			 } else {
-				    mc_maclist_set_random_vendor_from_list (mac, list_wireless);
-			 }
-			 break;
-	   case mac_is_wireless:
-			 mc_maclist_set_random_vendor_from_list (mac, list_wireless);
-			 break;
-	   case mac_is_others:
-			 mc_maclist_set_random_vendor_from_list (mac, list_others);
-			 break;
-	   }
+	total = LIST_LENGTH (list_others) +
+		LIST_LENGTH (list_wireless);
+
+	num = random() % total;
+
+	switch (type) {
+	case mac_is_anykind:
+		if (num < LIST_LENGTH(list_others)) {
+			mc_maclist_set_random_vendor_from_list (mac, list_others);
+		} else {
+			mc_maclist_set_random_vendor_from_list (mac, list_wireless);
+		}
+		break;
+	case mac_is_wireless:
+		mc_maclist_set_random_vendor_from_list (mac, list_wireless);
+		break;
+	case mac_is_others:
+		mc_maclist_set_random_vendor_from_list (mac, list_others);
+		break;
+	}
 }
 
 
 int
 mc_maclist_is_wireless (const mac_t *mac)
 {
-	   return (mc_maclist_get_cardname_from_list (mac, list_wireless) != NULL);
+	return (mc_maclist_get_cardname_from_list (mac, list_wireless) != NULL);
 }
 
 
 static void
 mc_maclist_print_from_list (card_mac_list_item_t *list, const char *keyword)
 {
-	   int i = 0;
+	int i = 0;
 
-	   while (list[i].name) {
-		   if (!keyword || (keyword && strstr(list[i].name, keyword))) {
-			 printf ("%04i - %02x:%02x:%02x - %s\n", i,
-				    list[i].byte[0], list[i].byte[1],list[i].byte[2],
-				    list[i].name);
-		   }
-			 i++;
-	   }
+	while (list[i].name) {
+		if (!keyword || (keyword && strstr(list[i].name, keyword))) {
+			printf ("%04i - %02x:%02x:%02x - %s\n", i,
+				list[i].byte[0], list[i].byte[1],list[i].byte[2],
+				list[i].name);
+		}
+		i++;
+	}
 }
 
 
 void
 mc_maclist_print (const char *keyword)
 {
-	   printf ("Misc MACs:\n"
-			 "Num    MAC        Vendor\n"
-			 "---    ---        ------\n");
-	   mc_maclist_print_from_list (list_others, keyword);
+	printf ("Misc MACs:\n"
+		"Num    MAC        Vendor\n"
+		"---    ---        ------\n");
+	mc_maclist_print_from_list (list_others, keyword);
 
-	   printf ("\n"
-			 "Wireless MACs:\n"
-			 "Num    MAC        Vendor\n"
-			 "---    ---        ------\n");
-	   mc_maclist_print_from_list (list_wireless, keyword);
+	printf ("\n"
+		"Wireless MACs:\n"
+		"Num    MAC        Vendor\n"
+		"---    ---        ------\n");
+	mc_maclist_print_from_list (list_wireless, keyword);
 }
 
 
@@ -169,14 +171,14 @@ mc_maclist_read_from_file (const char *fullpath)
 	card_mac_list_item_t *list;
 
 	if ((f = fopen(fullpath, "r")) == NULL) {
-		fprintf (stderr, "ERROR: Can't read MAC list file \"%s\", It looks like a bad installation\n", fullpath);
+		fprintf (stderr, "[ERROR] Could not read data file: %s\n", fullpath);
 		return NULL;
 	}
 
 	/* Count lines */
-	while ((line = fgets (tmp, 511, f)) != NULL) num++;	
+	while ((line = fgets (tmp, 511, f)) != NULL) num++;
 	rewind (f);
-	
+
 	/* Get mem */
 	list = (card_mac_list_item_t *) malloc (sizeof(card_mac_list_item_t) * (num+1));
 
@@ -189,7 +191,7 @@ mc_maclist_read_from_file (const char *fullpath)
 
 		line[strlen(line)-1] = '\0';
 		list[num].name = (char*)(strdup(line+9));
-		
+
 		num ++;
 	}
 
@@ -231,4 +233,3 @@ mc_maclist_free (void)
 	free_list (list_others);
 	free_list (list_wireless);
 }
-

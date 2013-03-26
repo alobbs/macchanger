@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2002 Alvaro Lopez Ortega
+ * Copyright (C) 2002,2013 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,16 +26,14 @@
 #ifndef __MAC_CHANGER_NETINFO_H__
 #define __MAC_CHANGER_NETINFO_H__
 
+#include <sys/socket.h>
 #include <net/if.h>
 #include "mac.h"
-
 
 typedef struct {
 	   int sock;
 	   struct ifreq dev;
 } net_info_t;
-
-
 
 net_info_t *mc_net_info_new     (const char *device);
 void        mc_net_info_free    (net_info_t *);
@@ -43,5 +41,6 @@ void        mc_net_info_free    (net_info_t *);
 mac_t      *mc_net_info_get_mac (const net_info_t *);
 int         mc_net_info_set_mac (net_info_t *, const mac_t *);
 
+mac_t      *mc_net_info_get_permanent_mac (const net_info_t *);
 
 #endif /* __MAC_CHANGER_NETINFO_H__ */

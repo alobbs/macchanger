@@ -12,7 +12,7 @@
 This file documents the GNU @code{macchanger} command for printing a
 greeting message.
 
-Copyright (C) 2003 Alvaro Lopez Ortega.
+Copyright (C) 2003,2013 Alvaro Lopez Ortega.
 
 @quotation
 Permission is granted to make and distribute verbatim copies of
@@ -56,13 +56,13 @@ approved by the Foundation.
 
 @end ifnottex
 
-This manual documents MacChanger version @value{VERSION}, a utility for 
+This manual documents MacChanger version @value{VERSION}, a utility for
 viewing/manipulating the MAC address of network interfaces.
 
 
 @menu
 * Overview::                    Overview of @command{macchanger}.
-* Features::                    
+* Features::
 * Invoking macchanger::         How to run @command{macchanger}.
 * Examples::                    Some example invocations.
 @end menu
@@ -82,6 +82,7 @@ address of network interfaces.
 @item Set a MAC of another vendor
 @item Set another MAC of the same vendor
 @item Set a MAC of the same kind (eg: wireless card)
+@item Reset MAC address to its original, permanent hardware value
 @item Display a vendor MAC list (today, 6200 items) to choose from
 @end itemize
 
@@ -135,6 +136,12 @@ Change the MAC address setting a random vendor MAC of any kind.
 @itemx --random
 @cindex @code{--random}
 Set fully random MAC address: Any kind and any vendor.
+
+@item -p
+@cindex @code{-p}
+@itemx --permanent
+@cindex @code{--permanent}
+Reset MAC address to its original, permanent hardware value.
 
 @item -l
 @cindex @code{-l}

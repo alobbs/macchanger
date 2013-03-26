@@ -29,11 +29,11 @@
 .SH NAME
 macchanger \- MAC Changer
 .SH SYNOPSIS
-.B macchanger 
+.B macchanger
 .RI [ options ]
 .RI device
 .SH DESCRIPTION
-\fBmacchanger\fP is a Linux utility for viewing/manipulating the MAC address for network interfaces.
+\fBmacchanger\fP is a GNU/Linux utility for viewing/manipulating the MAC address for network interfaces.
 .\" .PP
 .\" It also...
 .SH OPTIONS
@@ -57,15 +57,24 @@ Set random vendor MAC of any kind.
 .B \-r, \-\-random
 Set fully random MAC.
 .TP
+.B \-p, \-\-permanent
+Reset MAC address to its original, permanent hardware value.
+.TP
 .B \-l, \-\-list[=keyword]
 Print known vendors (with keyword in the vendor's description string)
 .TP
-.B \-m, \-\-mac XX:XX:XX:XX:XX:XX
+.B \-b, \-\-bia
+Pretend to be a burned-in-address. If not used, the MAC will have the locally-administered bit set.
+.TP
+.B \-m, \-\-mac XX:XX:XX:XX:XX:XX, \-\-mac=XX:XX:XX:XX:XX:XX
 Set the MAC XX:XX:XX:XX:XX:XX
+.TP
+.B \-s, \-\-show
+Prints the current MAC
 .SH EXAMPLE
-macchanger -A eth1
+macchanger \-A eth1
 .SH "SEE ALSO"
 ifconfig (8)
-.\" .BR foo (1), 
+.\" .BR foo (1),
 .SH AUTHOR
 Alvaro Lopez Ortega <alvaro@alobbs.com>.
