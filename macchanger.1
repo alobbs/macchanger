@@ -1,5 +1,5 @@
 .\"                              hey, Emacs:   -*- nroff -*-
-.\" macc is free software; you can redistribute it and/or modify
+.\" macchanger is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
 .\" the Free Software Foundation; either version 2 of the License, or
 .\" (at your option) any later version.
@@ -13,7 +13,7 @@
 .\" along with this program; see the file COPYING.  If not, write to
 .\" the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.TH MACC 1 "December 1, 2002"
+.TH MACCHANGER 1 "April 10, 2013"
 .\" Please update the above date whenever this man page is modified.
 .\"
 .\" Some roff macros, for reference:
@@ -45,6 +45,9 @@ Show summary of options.
 .B \-V, \-\-version
 Show version of program.
 .TP
+.B \-s, \-\-show
+Prints the current MAC.
+.TP
 .B \-e, \-\-ending
 Don't change the vendor bytes.
 .TP
@@ -61,16 +64,13 @@ Set fully random MAC.
 Reset MAC address to its original, permanent hardware value.
 .TP
 .B \-l, \-\-list[=keyword]
-Print known vendors (with keyword in the vendor's description string)
+Print known vendors (with keyword in the vendor's description string).
 .TP
 .B \-b, \-\-bia
 Pretend to be a burned-in-address. If not used, the MAC will have the locally-administered bit set.
 .TP
 .B \-m, \-\-mac XX:XX:XX:XX:XX:XX, \-\-mac=XX:XX:XX:XX:XX:XX
-Set the MAC XX:XX:XX:XX:XX:XX
-.TP
-.B \-s, \-\-show
-Prints the current MAC
+Set the MAC XX:XX:XX:XX:XX:XX.
 .SH EXAMPLE
 macchanger \-A eth1
 .SH "SEE ALSO"

@@ -83,7 +83,7 @@ address of network interfaces.
 @item Set another MAC of the same vendor
 @item Set a MAC of the same kind (eg: wireless card)
 @item Reset MAC address to its original, permanent hardware value
-@item Display a vendor MAC list (today, 6200 items) to choose from
+@item Display a vendor MAC list (more than 17000 items) to choose from
 @end itemize
 
 
@@ -149,6 +149,13 @@ Reset MAC address to its original, permanent hardware value.
 @cindex @code{--list}
 Print known vendors. If a key is spefified, @command{macchanger} will
 print only vendor that matches the string.
+
+@item -b
+@cindex @code{-b}
+@itemx --bia
+@cindex @code{--bia}
+Pretend to be a burned-in-address. If not used, the MAC will have the
+locally-administered bit set.
 
 @item -m
 @cindex @code{-m}
