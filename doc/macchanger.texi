@@ -115,8 +115,8 @@ Print the current MAC address and exit.
 
 @item -e
 @cindex @code{-e}
-@itemx --endding
-@cindex @code{--endding}
+@itemx --ending
+@cindex @code{--ending}
 Change the MAC address setting the same hardware vendor as the current.
 
 @item -a

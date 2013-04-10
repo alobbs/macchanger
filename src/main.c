@@ -51,7 +51,7 @@ print_help (void)
 		"  -h,  --help                   Print this help\n"
 		"  -V,  --version                Print version and exit\n"
 		"  -s,  --show                   Print the MAC address and exit\n"
-		"  -e,  --endding                Don't change the vendor bytes\n"
+		"  -e,  --ending                 Don't change the vendor bytes\n"
 		"  -a,  --another                Set random vendor MAC of the same kind\n"
 		"  -A                            Set random vendor MAC of any kind\n"
 		"  -p,  --permanent              Reset to original, permanent hardware MAC\n"
@@ -112,7 +112,7 @@ int
 main (int argc, char *argv[])
 {
 	char random       = 0;
-	char endding      = 0;
+	char ending       = 0;
 	char another_any  = 0;
 	char another_same = 0;
 	char permanent    = 0;
@@ -127,7 +127,8 @@ main (int argc, char *argv[])
 		{"help",        no_argument,       NULL, 'h'},
 		{"version",     no_argument,       NULL, 'V'},
 		{"random",      no_argument,       NULL, 'r'},
-		{"endding",     no_argument,       NULL, 'e'},
+		{"ending",      no_argument,       NULL, 'e'},
+		{"endding",     no_argument,       NULL, 'e'}, /* kept for backwards compatibility */
 		{"another",     no_argument,       NULL, 'a'},
 		{"permanent",   no_argument,       NULL, 'p'},
 		{"show",        no_argument,       NULL, 's'},
@@ -166,7 +167,7 @@ main (int argc, char *argv[])
 			random = 1;
 			break;
 		case 'e':
-			endding = 1;
+			ending = 1;
 			break;
 		case 'b':
 			set_bia = 1;
@@ -238,7 +239,7 @@ main (int argc, char *argv[])
 		}
 	} else if (random) {
 		mc_mac_random (mac_faked, 6, set_bia);
-	} else if (endding) {
+	} else if (ending) {
 		mc_mac_random (mac_faked, 3, set_bia);
 	} else if (another_same) {
 		val = mc_maclist_is_wireless (mac);
