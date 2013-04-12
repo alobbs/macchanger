@@ -217,12 +217,17 @@ main (int argc, char *argv[])
 	/* Seed a random number generator */
 	random_seed();
 
-        /* Read the MAC */
+	/* Read the MAC */
 	if ((net = mc_net_info_new(device_name)) == NULL) {
 		exit (EXIT_ERROR);
 	}
 	mac = mc_net_info_get_mac(net);
 	mac_permanent = mc_net_info_get_permanent_mac(net);
+
+	/* --bia can only be used with --random */
+	if (set_bia  &&  !random) {
+		fprintf (stderr, "[WARNING] Ignoring --bia option that can only be used with --random\n");
+	}
 
 	/* Print the current MAC info */
 	print_mac ("Current MAC:   ", mac);
@@ -240,14 +245,14 @@ main (int argc, char *argv[])
 	} else if (random) {
 		mc_mac_random (mac_faked, 6, set_bia);
 	} else if (ending) {
-		mc_mac_random (mac_faked, 3, set_bia);
+		mc_mac_random (mac_faked, 3, 1);
 	} else if (another_same) {
 		val = mc_maclist_is_wireless (mac);
 		mc_maclist_set_random_vendor (mac_faked, val);
-		mc_mac_random (mac_faked, 3, set_bia);
+		mc_mac_random (mac_faked, 3, 1);
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
-		mc_mac_random (mac_faked, 3, set_bia);
+		mc_mac_random (mac_faked, 3, 1);
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
 	} else {

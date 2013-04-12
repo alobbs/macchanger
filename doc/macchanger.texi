@@ -154,8 +154,8 @@ print only vendor that matches the string.
 @cindex @code{-b}
 @itemx --bia
 @cindex @code{--bia}
-Pretend to be a burned-in-address. If not used, the MAC will have the
-locally-administered bit set.
+When setting fully random MAC pretend to be a burned-in-address. If not used,
+the MAC will have the locally-administered bit set.
 
 @item -m
 @cindex @code{-m}
