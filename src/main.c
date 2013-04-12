@@ -256,7 +256,7 @@ main (int argc, char *argv[])
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
 	} else {
-		mc_mac_next (mac_faked);
+		exit (EXIT_OK); /* default to show */
 	}
 
 	/* Set the new MAC */

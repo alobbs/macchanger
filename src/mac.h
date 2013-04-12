@@ -46,6 +46,5 @@ int     mc_mac_equal       (const mac_t *, const mac_t *);
 mac_t  *mc_mac_dup         (const mac_t *);
 void    mc_mac_free        (mac_t *);
 void    mc_mac_random      (mac_t *, unsigned char last_n_bytes, char set_bia);
-void    mc_mac_next        (mac_t *);
 
 #endif /* __MAC_CHANGER_LISTA_H__ */

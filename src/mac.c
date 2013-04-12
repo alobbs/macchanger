@@ -106,19 +106,6 @@ mc_mac_equal (const mac_t *mac1, const mac_t *mac2)
 }
 
 
-void
-mc_mac_next (mac_t *mac)
-{
-	if (++mac->byte[5]) return;
-	if (++mac->byte[4]) return;
-	if (++mac->byte[3]) return;
-	if (++mac->byte[2]) return;
-	if (++mac->byte[1]) return;
-	if (++mac->byte[0]) return;
-	mac->byte[5] = 1;
-}
-
-
 int
 mc_mac_read_string (mac_t *mac, char *string)
 {

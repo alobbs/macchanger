@@ -111,7 +111,8 @@ This version number should be included in all bug reports.
 @cindex @code{-s}
 @itemx --show
 @cindex @code{--show}
-Print the current MAC address and exit.
+Print the current MAC address and exit. This is the default action when no
+other option is specified.
 
 @item -e
 @cindex @code{-e}
