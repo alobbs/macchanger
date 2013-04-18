@@ -47,7 +47,8 @@ mc_net_info_new (const char *device)
 		return NULL;
 	}
 
-	strcpy (new->dev.ifr_name, device);
+	strncpy (new->dev.ifr_name, device, sizeof(new->dev.ifr_name));
+	new->dev.ifr_name[sizeof(new->dev.ifr_name)-1] = '\0';
 	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
 		perror ("[ERROR] Set device name");
 		free(new);

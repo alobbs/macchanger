@@ -32,6 +32,9 @@
 card_mac_list_item_t *list_others   = NULL; /* IEEE OUI */
 card_mac_list_item_t *list_wireless = NULL; /* Wireless cards */
 
+int list_others_len   = 0;
+int list_wireless_len = 0;
+
 
 static char *
 mc_maclist_get_cardname_from_list (const mac_t *mac, card_mac_list_item_t *list)
@@ -76,17 +79,14 @@ mc_maclist_get_cardname_with_default (const mac_t *mac, const char *def)
 }
 
 static void
-mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list)
+mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list, int list_len)
 {
-	int i, num = 0;
-
-	/* Count */
-	while (list[++num].name);
+	int i, num = list_len;
 
 	/* Choose one randomly */
 	num = random()%num;
 
-	/* Copy the vender MAC range */
+	/* Copy the vendor MAC range */
 	for (i=0; i<3; i++) {
 		mac->byte[i] = list[num].byte[i];
 	}
@@ -96,27 +96,23 @@ mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list)
 void
 mc_maclist_set_random_vendor (mac_t *mac, mac_type_t type)
 {
-	unsigned long num;
-	long          total;
+	int num;
 
-	total = LIST_LENGTH (list_others) +
-		LIST_LENGTH (list_wireless);
-
-	num = random() % total;
+	num = random() % ( list_others_len + list_wireless_len );
 
 	switch (type) {
 	case mac_is_anykind:
-		if (num < LIST_LENGTH(list_others)) {
-			mc_maclist_set_random_vendor_from_list (mac, list_others);
+		if (num < list_others_len) {
+			mc_maclist_set_random_vendor_from_list (mac, list_others, list_others_len);
 		} else {
-			mc_maclist_set_random_vendor_from_list (mac, list_wireless);
+			mc_maclist_set_random_vendor_from_list (mac, list_wireless, list_wireless_len);
 		}
 		break;
 	case mac_is_wireless:
-		mc_maclist_set_random_vendor_from_list (mac, list_wireless);
+		mc_maclist_set_random_vendor_from_list (mac, list_wireless, list_wireless_len);
 		break;
 	case mac_is_others:
-		mc_maclist_set_random_vendor_from_list (mac, list_others);
+		mc_maclist_set_random_vendor_from_list (mac, list_others, list_others_len);
 		break;
 	}
 }
@@ -162,12 +158,12 @@ mc_maclist_print (const char *keyword)
 
 
 static card_mac_list_item_t *
-mc_maclist_read_from_file (const char *fullpath)
+mc_maclist_read_from_file (const char *fullpath, int *list_len)
 {
 	FILE *f;
 	char *line;
 	char  tmp[512];
-	int   num =0;
+	int   num = 0;
 	card_mac_list_item_t *list;
 
 	if ((f = fopen(fullpath, "r")) == NULL) {
@@ -201,6 +197,7 @@ mc_maclist_read_from_file (const char *fullpath)
 
 	fclose (f);
 
+	*list_len = num;
 	return list;
 }
 
@@ -208,8 +205,8 @@ mc_maclist_read_from_file (const char *fullpath)
 int
 mc_maclist_init (void)
 {
-	list_others = mc_maclist_read_from_file(LISTDIR "/OUI.list");
-	list_wireless = mc_maclist_read_from_file(LISTDIR "/wireless.list");
+	list_others = mc_maclist_read_from_file(LISTDIR "/OUI.list", &list_others_len);
+	list_wireless = mc_maclist_read_from_file(LISTDIR "/wireless.list", &list_wireless_len);
 
 	return (list_others && list_wireless)? 0 : -1;
 }

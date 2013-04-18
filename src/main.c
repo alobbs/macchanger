@@ -51,7 +51,7 @@ print_help (void)
 		"  -h,  --help                   Print this help\n"
 		"  -V,  --version                Print version and exit\n"
 		"  -s,  --show                   Print the MAC address and exit\n"
-		"  -e,  --endding                Don't change the vendor bytes\n"
+		"  -e,  --ending                 Don't change the vendor bytes\n"
 		"  -a,  --another                Set random vendor MAC of the same kind\n"
 		"  -A                            Set random vendor MAC of any kind\n"
 		"  -p,  --permanent              Reset to original, permanent hardware MAC\n"
@@ -112,7 +112,7 @@ int
 main (int argc, char *argv[])
 {
 	char random       = 0;
-	char endding      = 0;
+	char ending       = 0;
 	char another_any  = 0;
 	char another_same = 0;
 	char permanent    = 0;
@@ -127,7 +127,8 @@ main (int argc, char *argv[])
 		{"help",        no_argument,       NULL, 'h'},
 		{"version",     no_argument,       NULL, 'V'},
 		{"random",      no_argument,       NULL, 'r'},
-		{"endding",     no_argument,       NULL, 'e'},
+		{"ending",      no_argument,       NULL, 'e'},
+		{"endding",     no_argument,       NULL, 'e'}, /* kept for backwards compatibility */
 		{"another",     no_argument,       NULL, 'a'},
 		{"permanent",   no_argument,       NULL, 'p'},
 		{"show",        no_argument,       NULL, 's'},
@@ -166,7 +167,7 @@ main (int argc, char *argv[])
 			random = 1;
 			break;
 		case 'e':
-			endding = 1;
+			ending = 1;
 			break;
 		case 'b':
 			set_bia = 1;
@@ -216,12 +217,17 @@ main (int argc, char *argv[])
 	/* Seed a random number generator */
 	random_seed();
 
-        /* Read the MAC */
+	/* Read the MAC */
 	if ((net = mc_net_info_new(device_name)) == NULL) {
 		exit (EXIT_ERROR);
 	}
 	mac = mc_net_info_get_mac(net);
 	mac_permanent = mc_net_info_get_permanent_mac(net);
+
+	/* --bia can only be used with --random */
+	if (set_bia  &&  !random) {
+		fprintf (stderr, "[WARNING] Ignoring --bia option that can only be used with --random\n");
+	}
 
 	/* Print the current MAC info */
 	print_mac ("Current MAC:   ", mac);
@@ -238,19 +244,19 @@ main (int argc, char *argv[])
 		}
 	} else if (random) {
 		mc_mac_random (mac_faked, 6, set_bia);
-	} else if (endding) {
-		mc_mac_random (mac_faked, 3, set_bia);
+	} else if (ending) {
+		mc_mac_random (mac_faked, 3, 1);
 	} else if (another_same) {
 		val = mc_maclist_is_wireless (mac);
 		mc_maclist_set_random_vendor (mac_faked, val);
-		mc_mac_random (mac_faked, 3, set_bia);
+		mc_mac_random (mac_faked, 3, 1);
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
-		mc_mac_random (mac_faked, 3, set_bia);
+		mc_mac_random (mac_faked, 3, 1);
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
 	} else {
-		mc_mac_next (mac_faked);
+		exit (EXIT_OK); /* default to show */
 	}
 
 	/* Set the new MAC */
