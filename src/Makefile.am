@@ -1,4 +1,4 @@
-INCLUDES = -DLISTDIR="\"$(datadir)/$(PACKAGE)\""
+AM_CPPFLAGS = -DLISTDIR="\"$(datadir)/$(PACKAGE)\""
 
 bin_PROGRAMS = macchanger
 

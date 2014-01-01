@@ -1,5 +1,6 @@
-AC_INIT(src/main.c)
-AM_INIT_AUTOMAKE(macchanger, 1.6.0)
+AC_INIT([macchanger], [1.7.0])
+AC_CONFIG_SRCDIR([src/main.c])
+AM_INIT_AUTOMAKE
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 

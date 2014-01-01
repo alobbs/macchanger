@@ -53,7 +53,7 @@ if test -z "$*"; then
 fi
 
 # Libtool
-if grep "^AM_PROG_LIBTOOL" configure.in >/dev/null; then
+if grep "^AM_PROG_LIBTOOL" configure.ac >/dev/null; then
   echo "Running: libtoolize --force --copy..."
   $LIBTOOLIZE --force --copy
 fi
@@ -64,7 +64,7 @@ rm -f aclocal.m4
 $ACLOCAL $ACLOCAL_FLAGS
 
 # Autoheader
-if grep "^AM_CONFIG_HEADER" configure.in >/dev/null; then
+if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then
   echo "Running: autoheader..."
   $AUTOHEADER
 fi
