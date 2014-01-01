@@ -21,6 +21,7 @@
 # USA
 #
 
+import re
 from sys import stdout
 from string import split, join, capitalize
 import urllib2
@@ -66,13 +67,12 @@ except IOError:
     content = download()
 
 for l in split (content, '\n'):
-    if l.find ("(hex)") != -1:
-        mac  = split(l[:8], "-")
-        name = join (map(lambda x: capitalize(x), split(l[18:], " ")), " ")
-        line = '%s %s %s %s' % (mac[0],mac[1],mac[2], name)
-
-        print 'Adding MAC: %s\r' % (line[:9]),
-        output.write (line+'\n')
+	found = re.findall (r'(\S\S)-(\S\S)-(\S\S)\s+\(hex\)\s+([\S ]+)', l)
+	if found:
+		info = found[0]
+		newline = '%s %s %s %s' %(info[0], info[1], info[2], info[3])
+		print 'Adding MAC: %s\r' % (newline[:9]),
+		output.write (newline + '\n')
 
 print
 output.close()
