@@ -94,8 +94,9 @@ random_seed (void)
 	struct timeval tv;
 	unsigned int   seed;
 
-	if ((fd = open("/dev/urandom", O_RDONLY)) >= 0 ||
-	    (fd = open("/dev/random", O_RDONLY)) >= 0)
+	if ((fd = open("/dev/hwrng", O_RDONLY)) >= 0 ||
+	    (fd = open("/dev/random", O_RDONLY)) >= 0 ||
+	    (fd = open("/dev/urandom", O_RDONLY)) >= 0)
 	{
 		read (fd, &seed, sizeof(seed));
 		close (fd);
