@@ -29,11 +29,25 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+
+#ifdef __linux__
 #include <linux/ethtool.h>
 #include <linux/sockios.h>
+#endif
+
+#ifdef __FreeBSD__
+#include <net/if.h>
+#include <net/if_dl.h>
+#include <net/if_types.h>
+
+#include <ifaddrs.h>
+
+#include <net/ethernet.h>
+#include <errno.h>
+
+#endif
 
 #include "netinfo.h"
-
 
 net_info_t *
 mc_net_info_new (const char *device)
@@ -49,7 +63,7 @@ mc_net_info_new (const char *device)
 
 	strncpy (new->dev.ifr_name, device, sizeof(new->dev.ifr_name));
 	new->dev.ifr_name[sizeof(new->dev.ifr_name)-1] = '\0';
-	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
+	if (!if_nametoindex(device)) {
 		perror ("[ERROR] Set device name");
 		free(new);
 		return NULL;
@@ -66,21 +80,68 @@ mc_net_info_free (net_info_t *net)
 	free(net);
 }
 
-
+#ifdef __linux__
 mac_t *
 mc_net_info_get_mac (const net_info_t *net)
 {
 	int    i;
-	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
+	mac_t *mac = (mac_t *) malloc (sizeof(mac_t));
 
-	for (i=0; i<6; i++) {
-		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
+	if (ioctl(net->sock, SIOCGIFHWADDR, &net->dev) < 0) {
+		perror ("[ERROR] Get mac address");
+		free(mac);
+		return NULL;
 	}
 
-	return new;
+	for (i=0; i<6; i++) {
+		mac->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
+	}
+
+	return mac;
 }
+#endif
+
+#ifdef __FreeBSD__
+mac_t *
+mc_net_info_get_mac (const net_info_t *net)
+{
+	int    i;
+	mac_t *mac = (mac_t *) malloc (sizeof(mac_t));
+	u_char *lladr;
+
+	struct ifaddrs *ifap, *ifa;
+	struct sockaddr_dl *sdl;
 
 
+
+	if (getifaddrs(&ifap) == 0) {
+		for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+
+			sdl = (struct sockaddr_dl *) ifa->ifa_addr;
+
+			if (strcmp(sdl->sdl_data, net->dev.ifr_name) != 0)
+				continue;
+
+			if (sdl == NULL && sdl->sdl_alen <= 0 &&
+					sdl->sdl_alen != ETHER_ADDR_LEN)
+				continue;
+
+			if (sdl->sdl_type == IFT_ETHER) {
+				lladr = (u_char *) LLADDR(sdl);
+				for (i=0; i<6; i++)
+					mac->byte[i] = lladr[i] & 0xFF;
+				break;
+			}
+		}
+		freeifaddrs(ifap);
+	} else
+		perror("getifaddrs");
+
+	return mac;
+}
+#endif
+
+#ifdef __linux__
 int
 mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 {
@@ -97,7 +158,32 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 
 	return 0;
 }
+#endif
 
+#ifdef __FreeBSD__
+int
+mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
+{
+	int i;
+
+	for (i=0; i<6; i++)
+		net->dev.ifr_addr.sa_data[i] = mac->byte[i];
+
+	net->dev.ifr_addr.sa_family = AF_LINK;
+	net->dev.ifr_addr.sa_len = ETHER_ADDR_LEN;
+
+	if (ioctl(net->sock, SIOCSIFLLADDR, &net->dev) == -1) {
+		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
+		printf("Errno %d\n", errno);
+		return -1;
+	}
+
+	return 0;
+}
+
+#endif
+
+#ifdef __linux__
 mac_t *
 mc_net_info_get_permanent_mac (const net_info_t *net)
 {
@@ -126,3 +212,4 @@ mc_net_info_get_permanent_mac (const net_info_t *net)
 	free(epa);
 	return newmac;
 }
+#endif
