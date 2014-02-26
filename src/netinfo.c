@@ -49,7 +49,7 @@ mc_net_info_new (const char *device)
 
 	strncpy (new->dev.ifr_name, device, sizeof(new->dev.ifr_name));
 	new->dev.ifr_name[sizeof(new->dev.ifr_name)-1] = '\0';
-	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
+	if (!if_nametoindex(device)) {
 		perror ("[ERROR] Set device name");
 		free(new);
 		return NULL;
@@ -73,9 +73,14 @@ mc_net_info_get_mac (const net_info_t *net)
 	int    i;
 	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
 
-	for (i=0; i<6; i++) {
-		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
+	if (ioctl(net->sock, SIOCGIFHWADDR, &net->dev) < 0) {
+		perror ("[ERROR] Get mac address");
+		free(mac_t);
+		return NULL;
 	}
+
+	for (i=0; i<6; i++)
+		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
 
 	return new;
 }
