@@ -40,9 +40,6 @@
 #include "maclist.h"
 #include "netinfo.h"
 
-#define EXIT_OK    0
-#define EXIT_ERROR 1
-
 static void
 print_help (void)
 {
@@ -158,7 +155,7 @@ main (int argc, char *argv[])
 				"This is free software; see the source for copying conditions.  There is NO\n"
 				"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
 				VERSION);
-			exit (EXIT_OK);
+			exit (EXIT_SUCCESS);
 			break;
 		case 'l':
 			print_list = 1;
@@ -192,26 +189,26 @@ main (int argc, char *argv[])
 		case '?':
 		default:
 			print_help();
-			exit (EXIT_OK);
+			exit (EXIT_SUCCESS);
 			break;
 		}
 	}
 
 	/* Read the MAC lists */
 	if (mc_maclist_init() < 0) {
-		exit (EXIT_ERROR);
+		exit (EXIT_FAILURE);
 	}
 
 	/* Print list? */
 	if (print_list) {
 		mc_maclist_print(search_word);
-		exit (EXIT_OK);
+		exit (EXIT_SUCCESS);
 	}
 
 	/* Get device name argument */
 	if (optind >= argc) {
 		print_usage();
-		exit (EXIT_OK);
+		exit (EXIT_SUCCESS);
 	}
 	device_name = argv[optind];
 
@@ -220,7 +217,7 @@ main (int argc, char *argv[])
 
 	/* Read the MAC */
 	if ((net = mc_net_info_new(device_name)) == NULL) {
-		exit (EXIT_ERROR);
+		exit (EXIT_FAILURE);
 	}
 	mac = mc_net_info_get_mac(net);
 	mac_permanent = mc_net_info_get_permanent_mac(net);
@@ -238,10 +235,10 @@ main (int argc, char *argv[])
 	mac_faked = mc_mac_dup (mac);
 
 	if (show) {
-		exit (EXIT_OK);
+		exit (EXIT_SUCCESS);
 	} else if (set_mac) {
 		if (mc_mac_read_string (mac_faked, set_mac) < 0) {
-			exit (EXIT_ERROR);
+			exit (EXIT_FAILURE);
 		}
 	} else if (random) {
 		mc_mac_random (mac_faked, 6, set_bia);
@@ -257,7 +254,7 @@ main (int argc, char *argv[])
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
 	} else {
-		exit (EXIT_OK); /* default to show */
+		exit (EXIT_SUCCESS); /* default to show */
 	}
 
 	/* Set the new MAC */
@@ -283,5 +280,5 @@ main (int argc, char *argv[])
 	mc_net_info_free (net);
 	mc_maclist_free();
 
-	return (ret == 0) ? EXIT_OK : EXIT_ERROR;
+	return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
