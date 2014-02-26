@@ -49,7 +49,7 @@ mc_net_info_new (const char *device)
 
 	strncpy (new->dev.ifr_name, device, sizeof(new->dev.ifr_name));
 	new->dev.ifr_name[sizeof(new->dev.ifr_name)-1] = '\0';
-	if (!if_nametoindex(device)) {
+	if (if_nametoindex(device) == 0) {
 		perror ("[ERROR] Set device name");
 		free(new);
 		return NULL;
