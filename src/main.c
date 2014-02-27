@@ -220,7 +220,9 @@ main (int argc, char *argv[])
 		exit (EXIT_FAILURE);
 	}
 	mac = mc_net_info_get_mac(net);
+#ifdef HAVE_LINUX_ETHTOOL
 	mac_permanent = mc_net_info_get_permanent_mac(net);
+#endif
 
 	/* --bia can only be used with --random */
 	if (set_bia  &&  !random) {
@@ -229,7 +231,9 @@ main (int argc, char *argv[])
 
 	/* Print the current MAC info */
 	print_mac ("Current MAC:   ", mac);
+#ifdef HAVE_LINUX_ETHTOOL
 	print_mac ("Permanent MAC: ", mac_permanent);
+#endif
 
 	/* Change the MAC */
 	mac_faked = mc_mac_dup (mac);
@@ -251,8 +255,10 @@ main (int argc, char *argv[])
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
 		mc_mac_random (mac_faked, 3, 1);
+#ifdef HAVE_LINUX_ETHTOOL
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
+#endif
 	} else {
 		exit (EXIT_SUCCESS); /* default to show */
 	}
@@ -276,7 +282,9 @@ main (int argc, char *argv[])
 	/* Memory free */
 	mc_mac_free (mac);
 	mc_mac_free (mac_faked);
+#ifdef HAVE_LINUX_ETHTOOL
 	mc_mac_free (mac_permanent);
+#endif
 	mc_net_info_free (net);
 	mc_maclist_free();
 
