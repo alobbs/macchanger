@@ -23,14 +23,26 @@
  * USA
  */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include <linux/ethtool.h>
-#include <linux/sockios.h>
+#ifdef HAVE_LINUX_ETHTOOL
+# include <linux/ethtool.h>
+# include <linux/sockios.h>
+#elif  HAVE_BSD_ETHTOOL
+# include <ifaddrs.h>
+# include <net/if.h>
+# include <net/if_dl.h>
+# include <net/if_var.h>
+# include <net/if_types.h>
+#endif
 
 #include "netinfo.h"
 
