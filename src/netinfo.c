@@ -104,7 +104,7 @@ mc_net_info_get_mac (const net_info_t *net)
 {
 	int i;
 	mac_t *mac = (mac_t *) malloc (sizeof(mac_t));
-	u_char *lladr;
+	uint8_t *lladr;
 
 	struct ifaddrs *ifap, *ifa;
 	struct sockaddr_dl *sdl;
