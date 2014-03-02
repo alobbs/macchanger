@@ -51,7 +51,9 @@ print_help (void)
 		"  -e,  --ending                 Don't change the vendor bytes\n"
 		"  -a,  --another                Set random vendor MAC of the same kind\n"
 		"  -A                            Set random vendor MAC of any kind\n"
+#ifdef HAVE_LINUX_ETHTOOL
 		"  -p,  --permanent              Reset to original, permanent hardware MAC\n"
+#endif
 		"  -r,  --random                 Set fully random MAC\n"
 		"  -l,  --list[=keyword]         Print known vendors\n"
 		"  -b,  --bia                    Pretend to be a burned-in-address\n"
@@ -113,7 +115,9 @@ main (int argc, char *argv[])
 	char ending       = 0;
 	char another_any  = 0;
 	char another_same = 0;
+#ifdef HAVE_LINUX_ETHTOOL
 	char permanent    = 0;
+#endif
 	char print_list   = 0;
 	char show         = 0;
 	char set_bia      = 0;
@@ -128,7 +132,9 @@ main (int argc, char *argv[])
 		{"ending",      no_argument,       NULL, 'e'},
 		{"endding",     no_argument,       NULL, 'e'}, /* kept for backwards compatibility */
 		{"another",     no_argument,       NULL, 'a'},
+#ifdef HAVE_LINUX_ETHTOOL
 		{"permanent",   no_argument,       NULL, 'p'},
+#endif
 		{"show",        no_argument,       NULL, 's'},
 		{"another_any", no_argument,       NULL, 'A'},
 		{"bia",         no_argument,       NULL, 'b'},
@@ -139,7 +145,9 @@ main (int argc, char *argv[])
 
 	net_info_t *net;
 	mac_t      *mac;
+#ifdef HAVE_LINUX_ETHTOOL
 	mac_t      *mac_permanent;
+#endif
 	mac_t      *mac_faked;
 	char       *device_name;
 	int         val;
@@ -179,9 +187,11 @@ main (int argc, char *argv[])
 		case 'A':
 			another_any = 1;
 			break;
+#ifdef HAVE_LINUX_ETHTOOL
 		case 'p':
 			permanent = 1;
 			break;
+#endif
 		case 'm':
 			set_mac = optarg;
 			break;
