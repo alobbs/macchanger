@@ -37,12 +37,12 @@
 # include <linux/ethtool.h>
 # include <linux/sockios.h>
 #elif  HAVE_BSD_ETHTOOL
-# include <ifaddrs.h>
 # include <net/if.h>
 # include <net/if_dl.h>
 # include <net/if_var.h>
 # include <net/if_types.h>
 # include <net/ethernet.h>
+# include <ifaddrs.h>
 #endif
 
 #include "netinfo.h"
@@ -117,16 +117,13 @@ mc_net_info_get_mac (const net_info_t *net)
 			if (strcmp(sdl->sdl_data, net->dev.ifr_name) != 0)
 				continue;
 
-			if (sdl == NULL && sdl->sdl_alen <= 0 &&
-					sdl->sdl_alen != ETHER_ADDR_LEN)
+			if (!sdl && sdl->sdl_family != AF_LINK)
 				continue;
 
-			if (sdl->sdl_type == IFT_ETHER) {
-				lladr = (u_char *) LLADDR(sdl);
-				for (i=0; i<6; i++)
-					mac->byte[i] = lladr[i] & 0xFF;
-				break;
-			}
+			lladr = (uint8_t *) LLADDR(sdl);
+			for (i=0; i<6; i++)
+				mac->byte[i] = lladr[i] & 0xFF;
+			break;
 		}
 		freeifaddrs(ifap);
 	} else
