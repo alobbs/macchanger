@@ -114,7 +114,7 @@ mc_net_info_get_mac (const net_info_t *net)
 
 			sdl = (struct sockaddr_dl *) ifa->ifa_addr;
 
-			if (strcmp(sdl->sdl_data, net->dev.ifr_name) != 0)
+			if (strcmp(ifa->ifa_name, net->dev.ifr_name) != 0)
 				continue;
 
 			if (!sdl && sdl->sdl_family != AF_LINK)
