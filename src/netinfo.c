@@ -104,7 +104,7 @@ mc_net_info_get_mac (const net_info_t *net)
 {
 	int i;
 	mac_t *mac = (mac_t *) malloc (sizeof(mac_t));
-	uint8_t *lladr;
+	u_char *lladr;
 
 	struct ifaddrs *ifap, *ifa;
 	struct sockaddr_dl *sdl;
@@ -120,7 +120,7 @@ mc_net_info_get_mac (const net_info_t *net)
 			if (!sdl && sdl->sdl_family != AF_LINK)
 				continue;
 
-			lladr = (uint8_t *) LLADDR(sdl);
+			lladr = (u_char *) LLADDR(sdl);
 			for (i=0; i<6; i++)
 				mac->byte[i] = lladr[i] & 0xFF;
 			break;
