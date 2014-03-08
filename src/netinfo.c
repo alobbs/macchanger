@@ -23,20 +23,16 @@
  * USA
  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#ifdef HAVE_LINUX_ETHTOOL
+#if defined(__linux__)
 # include <linux/ethtool.h>
 # include <linux/sockios.h>
-#elif  HAVE_BSD_ETHTOOL
+#elif defined(__FreeBSD__)
 # include <net/if.h>
 # include <net/if_dl.h>
 # include <net/if_var.h>
@@ -79,26 +75,6 @@ mc_net_info_free (net_info_t *net)
 	free(net);
 }
 
-
-#ifdef HAVE_LINUX_ETHTOOL
-mac_t *
-mc_net_info_get_mac (const net_info_t *net)
-{
-	int    i;
-	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
-
-	if (ioctl(net->sock, SIOCGIFHWADDR, &net->dev) < 0) {
-		perror ("[ERROR] Get mac address");
-		free(mac_t);
-		return NULL;
-	}
-
-	for (i=0; i<6; i++)
-		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
-
-	return new;
-}
-#elif  HAVE_BSD_ETHTOOL
 mac_t *
 mc_net_info_get_mac (const net_info_t *net)
 {
@@ -131,45 +107,32 @@ mc_net_info_get_mac (const net_info_t *net)
 
 	return mac;
 }
-#endif
 
-#ifdef HAVE_LINUX_ETHTOOL
 int
 mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 {
 	int i;
-
-	for (i=0; i<6; i++)
-		net->dev.ifr_hwaddr.sa_data[i] = mac->byte[i];
-
-	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) < 0) {
-		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
-		return -1;
-	}
-
-	return 0;
-}
-#elif defined(HAVE_BSD_ETHTOOL)
-int
-mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
-{
-	int i;
+#if defined(__FreeBSD__)
 	net->dev.ifr_addr.sa_family = AF_LINK;
 	net->dev.ifr_addr.sa_len    = ETHER_ADDR_LEN;
+#endif
 
 	for (i=0; i<6; i++)
+#if   defined(__linux__)
+		net->dev.ifr_hwaddr.sa_data[i] = mac->byte[i];
+#elif defined(__FreeBSD__)
 		net->dev.ifr_addr.sa_data[i] = mac->byte[i];
+#endif
 
-	if (ioctl(net->sock, SIOCSIFLLADDR, &net->dev) == -1) {
+	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) == -1) {
 		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
 		return -1;
 	}
 
 	return 0;
 }
-#endif
 
-#ifdef HAVE_LINUX_ETHTOOL
+#if defined(__linux__)
 mac_t *
 mc_net_info_get_permanent_mac (const net_info_t *net)
 {
