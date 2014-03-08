@@ -124,7 +124,7 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 		net->dev.ifr_addr.sa_data[i] = mac->byte[i];
 #endif
 
-	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) == -1) {
+	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) > 0) {
 		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
 		return -1;
 	}
