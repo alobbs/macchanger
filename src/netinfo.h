@@ -30,17 +30,6 @@
 #include <net/if.h>
 #include "mac.h"
 
-#ifdef __linux__
-#define sockaddr_dl    sockaddr_ll
-#define sdl_family     sll_family
-#define AF_LINK        AF_PACKET
-#define LLADDR(s)      s->sll_addr;
-#endif
-
-#ifdef __FreeBSD__
-#define SIOCSIFHWADDR SIOCSIFLLADDR
-#endif
-
 typedef struct {
 	   int sock;
 	   struct ifreq dev;

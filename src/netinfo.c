@@ -23,22 +23,29 @@
  * USA
  */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#if defined(__linux__)
+#include <ifaddrs.h>
+#include <net/if.h>
+#include <net/ethernet.h>
+
+#if defined(HAVE_IF_PACKET)
+# include <linux/if_packet.h>
+#elif defined(HAVE_IF_DL)
+# include <net/if_dl.h>
+#endif
+
+#if defined(HAVE_ETHTOOL)
 # include <linux/ethtool.h>
 # include <linux/sockios.h>
-#elif defined(__FreeBSD__)
-# include <net/if.h>
-# include <net/if_dl.h>
-# include <net/if_var.h>
-# include <net/if_types.h>
-# include <net/ethernet.h>
-# include <ifaddrs.h>
 #endif
 
 #include "netinfo.h"
@@ -83,17 +90,17 @@ mc_net_info_get_mac (const net_info_t *net)
 	u_char *lladr;
 
 	struct ifaddrs *ifap, *ifa;
-	struct sockaddr_dl *sdl;
+	struct sockaddr_ll *sdl;
 
 	if (getifaddrs(&ifap) == 0) {
 		for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
 
-			sdl = (struct sockaddr_dl *) ifa->ifa_addr;
+			sdl = (struct sockaddr_ll *) ifa->ifa_addr;
 
 			if (strcmp(ifa->ifa_name, net->dev.ifr_name) != 0)
 				continue;
 
-			if (!sdl && sdl->sdl_family != AF_LINK)
+			if (!sdl && sdl->sll_family != AF_PACKET)
 				continue;
 
 			lladr = (u_char *) LLADDR(sdl);
@@ -112,17 +119,13 @@ int
 mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 {
 	int i;
-#if defined(__FreeBSD__)
-	net->dev.ifr_addr.sa_family = AF_LINK;
+#if defined(HAVE_SOCKADDR_SA_LEN)
+	net->dev.ifr_addr.sa_family = AF_PACKET;
 	net->dev.ifr_addr.sa_len    = ETHER_ADDR_LEN;
 #endif
 
 	for (i=0; i<6; i++)
-#if   defined(__linux__)
 		net->dev.ifr_hwaddr.sa_data[i] = mac->byte[i];
-#elif defined(__FreeBSD__)
-		net->dev.ifr_addr.sa_data[i] = mac->byte[i];
-#endif
 
 	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) < 0) {
 		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
@@ -132,7 +135,7 @@ mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 	return 0;
 }
 
-#if defined(__linux__)
+#if defined(HAVE_ETHTOOL)
 mac_t *
 mc_net_info_get_permanent_mac (const net_info_t *net)
 {

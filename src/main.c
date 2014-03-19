@@ -51,7 +51,7 @@ print_help (void)
 		"  -e,  --ending                 Don't change the vendor bytes\n"
 		"  -a,  --another                Set random vendor MAC of the same kind\n"
 		"  -A                            Set random vendor MAC of any kind\n"
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 		"  -p,  --permanent              Reset to original, permanent hardware MAC\n"
 #endif
 		"  -r,  --random                 Set fully random MAC\n"
@@ -115,7 +115,7 @@ main (int argc, char *argv[])
 	char ending       = 0;
 	char another_any  = 0;
 	char another_same = 0;
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 	char permanent    = 0;
 #endif
 	char print_list   = 0;
@@ -132,7 +132,7 @@ main (int argc, char *argv[])
 		{"ending",      no_argument,       NULL, 'e'},
 		{"endding",     no_argument,       NULL, 'e'}, /* kept for backwards compatibility */
 		{"another",     no_argument,       NULL, 'a'},
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 		{"permanent",   no_argument,       NULL, 'p'},
 #endif
 		{"show",        no_argument,       NULL, 's'},
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
 
 	net_info_t *net;
 	mac_t      *mac;
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 	mac_t      *mac_permanent;
 #endif
 	mac_t      *mac_faked;
@@ -187,7 +187,7 @@ main (int argc, char *argv[])
 		case 'A':
 			another_any = 1;
 			break;
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 		case 'p':
 			permanent = 1;
 			break;
@@ -230,7 +230,7 @@ main (int argc, char *argv[])
 		exit (EXIT_FAILURE);
 	}
 	mac = mc_net_info_get_mac(net);
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 	mac_permanent = mc_net_info_get_permanent_mac(net);
 #endif
 
@@ -241,7 +241,7 @@ main (int argc, char *argv[])
 
 	/* Print the current MAC info */
 	print_mac ("Current MAC:   ", mac);
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 	print_mac ("Permanent MAC: ", mac_permanent);
 #endif
 
@@ -265,7 +265,7 @@ main (int argc, char *argv[])
 	} else if (another_any) {
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
 		mc_mac_random (mac_faked, 3, 1);
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
 #endif
@@ -292,7 +292,7 @@ main (int argc, char *argv[])
 	/* Memory free */
 	mc_mac_free (mac);
 	mc_mac_free (mac_faked);
-#ifdef __linux__
+#if defined(HAVE_ETHTOOL)
 	mc_mac_free (mac_permanent);
 #endif
 	mc_net_info_free (net);
