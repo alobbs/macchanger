@@ -119,7 +119,12 @@ int
 mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
 {
 	int i;
-#if defined(HAVE_SOCKADDR_SA_LEN)
+#if defined(HAVE_ETHTOOL)
+	if (ioctl(net->sock, SIOCGIFHWADDR, &net->dev) < 0) {
+		perror ("[ERROR] Set ifreq structure");
+		return -1;
+	}
+#elif defined(HAVE_SOCKADDR_SA_LEN)
 	net->dev.ifr_addr.sa_family = AF_PACKET;
 	net->dev.ifr_addr.sa_len    = ETHER_ADDR_LEN;
 #endif
