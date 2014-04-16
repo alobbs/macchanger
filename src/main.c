@@ -197,10 +197,12 @@ main (int argc, char *argv[])
 		}
 	}
 
+#ifndef EXCLUDE_MACLIST
 	/* Read the MAC lists */
 	if (mc_maclist_init() < 0) {
 		exit (EXIT_ERROR);
 	}
+#endif
 
 	/* Print list? */
 	if (print_list) {
