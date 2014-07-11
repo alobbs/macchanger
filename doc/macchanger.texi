@@ -138,6 +138,13 @@ Change the MAC address setting a random vendor MAC of any kind.
 @cindex @code{--random}
 Set fully random MAC address: Any kind and any vendor.
 
+@item -d
+@cindex @code{-d}
+@itemx --different
+@cindex @code{--different}
+Make sure the random MAC address is different from last one. That option must
+be used with either -e, -a, -A, or -r.
+
 @item -p
 @cindex @code{-p}
 @itemx --permanent
