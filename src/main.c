@@ -274,20 +274,26 @@ main (int argc, char *argv[])
 		exit (EXIT_OK); /* default to show */
 	}
 
-	/* Set the new MAC */
-	ret = mc_net_info_set_mac (net, mac_faked);
-	if (ret == 0) {
-		/* Re-read the MAC */
-		mc_mac_free (mac_faked);
-		mac_faked = mc_net_info_get_mac(net);
+	if (!mc_mac_equal (mac, mac_faked)) {
+		/* Set the new MAC */
+		ret = mc_net_info_set_mac (net, mac_faked);
+		if (ret == 0) {
+			/* Re-read the MAC */
+			mc_mac_free (mac_faked);
+			mac_faked = mc_net_info_get_mac(net);
 
-		/* Print it */
-		print_mac ("New MAC:       ", mac_faked);
+			/* Print it */
+			print_mac ("New MAC:       ", mac_faked);
 
-		/* Is the same MAC? */
-		if (mc_mac_equal (mac, mac_faked)) {
-			printf ("It's the same MAC!!\n");
+			/* Is the same MAC? */
+			if (mc_mac_equal (mac, mac_faked)) {
+				printf ("It's the same MAC!!\n");
+				exit (EXIT_ERROR);
+			}
 		}
+	} else {
+		// No change required
+		ret = 0;
 	}
 
 	/* Memory free */
