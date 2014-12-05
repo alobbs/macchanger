@@ -27,6 +27,8 @@
 # include <config.h>
 #endif
 
+#include <libchula/libchula.h>
+
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/time.h>
@@ -84,28 +86,6 @@ print_mac (const char *s, const mac_t *mac)
 		string,
 		is_wireless ? " [wireless]": "",
 		CARD_NAME(mac));
-}
-
-
-static void
-random_seed (void)
-{
-	int            fd;
-	struct timeval tv;
-	unsigned int   seed;
-
-	if ((fd = open("/dev/hwrng", O_RDONLY)) >= 0 ||
-	    (fd = open("/dev/random", O_RDONLY)) >= 0 ||
-	    (fd = open("/dev/urandom", O_RDONLY)) >= 0)
-	{
-		read (fd, &seed, sizeof(seed));
-		close (fd);
-	} else {
-		gettimeofday (&tv, NULL);
-		seed = (getpid() << 16) ^ tv.tv_sec ^ tv.tv_usec;
-	}
-
-	srandom(seed);
 }
 
 
@@ -216,7 +196,7 @@ main (int argc, char *argv[])
 	device_name = argv[optind];
 
 	/* Seed a random number generator */
-	random_seed();
+	chula_random_seed();
 
 	/* Read the MAC */
 	if ((net = mc_net_info_new(device_name)) == NULL) {
