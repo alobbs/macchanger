@@ -10,6 +10,10 @@ AC_SUBST(VERSION)
 AC_PROG_INSTALL
 AC_PROG_CC
 
+AC_CHECK_LIB(chula, chula_buffer_new)
+AC_CHECK_HEADER(libchula/libchula.h, ,
+			 [AC_MSG_ERROR([libchula is required: https://github.com/alobbs/libchula])])
+
 AC_OUTPUT([
 Makefile
 src/Makefile
