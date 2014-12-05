@@ -40,3 +40,10 @@ version.texi
 # Misc
 *~
 macchanger
+compile
+
+# Packages
+*.tar.gz
+*.tar.gz.directive
+*.tar.gz.directive.asc
+*.tar.gz.sig
