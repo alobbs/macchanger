@@ -39,12 +39,12 @@ typedef enum {
 
 
 
-int     mc_mac_read_string (mac_t *, char *);
-void    mc_mac_into_string (const mac_t *, char *);
+int    mc_mac_read_string (mac_t *, char *);
+void   mc_mac_into_string (const mac_t *, char *);
 
-int     mc_mac_equal       (const mac_t *, const mac_t *);
-mac_t  *mc_mac_dup         (const mac_t *);
-void    mc_mac_free        (mac_t *);
-void    mc_mac_random      (mac_t *, unsigned char last_n_bytes, char set_bia);
+int    mc_mac_equal       (const mac_t *, const mac_t *);
+mac_t *mc_mac_dup         (const mac_t *);
+void   mc_mac_free        (mac_t *);
+void   mc_mac_random      (mac_t *, unsigned char last_n_bytes, char set_bia);
 
 #endif /* __MAC_CHANGER_LISTA_H__ */
