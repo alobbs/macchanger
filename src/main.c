@@ -74,18 +74,22 @@ print_usage (void)
 }
 
 
-static void
-print_mac (const char *s, const mac_t *mac)
+static ret_t
+print_mac (const char *title, mac_t *mac)
 {
-	char string[18];
-	int  is_wireless;
+    ret_t          ret;
+    chula_buffer_t tmp = CHULA_BUF_INIT;
 
-	is_wireless = mc_maclist_is_wireless(mac);
-	mc_mac_into_string (mac, string);
-	printf ("%s%s%s (%s)\n", s,
-		string,
-		is_wireless ? " [wireless]": "",
-		CARD_NAME(mac));
+    ret = mc_mac_to_buf (mac, &tmp);
+    if (ret != ret_ok) return ret;
+
+    bool is_wireless = mc_maclist_is_wireless(mac);
+	printf ("%s%s%s (%s)\n", title, tmp.buf,
+            is_wireless ? " [wireless]": "",
+            CARD_NAME(mac));
+
+    chula_buffer_mrproper (&tmp);
+    return ret_ok;
 }
 
 
@@ -100,8 +104,8 @@ main (int argc, char *argv[])
 	char print_list   = 0;
 	char show         = 0;
 	char set_bia      = 0;
-	char *set_mac     = NULL;
 	char *search_word = NULL;
+    chula_buffer_t mac_to_set = CHULA_BUF_INIT;
 
 	struct option long_options[] = {
 		/* Options without arguments */
@@ -126,7 +130,8 @@ main (int argc, char *argv[])
 	mac_t      *mac_faked;
 	char       *device_name;
 	int         val;
-	int         ret;
+	ret_t       ret;
+	int         re;
 
 	/* Read the parameters */
 	while ((val = getopt_long (argc, argv, "VasAbrephlm:", long_options, NULL)) != -1) {
@@ -166,7 +171,9 @@ main (int argc, char *argv[])
 			permanent = 1;
 			break;
 		case 'm':
-			set_mac = optarg;
+            if (optarg) {
+                chula_buffer_add (&mac_to_set, optarg, strlen(optarg));
+            }
 			break;
 		case 'h':
 		case '?':
@@ -178,9 +185,10 @@ main (int argc, char *argv[])
 	}
 
 	/* Read the MAC lists */
-	if (mc_maclist_init() < 0) {
+    ret = mc_maclists_init();
+    if (ret != ret_ok) {
 		exit (EXIT_ERROR);
-	}
+    }
 
 	/* Print list? */
 	if (print_list) {
@@ -215,14 +223,18 @@ main (int argc, char *argv[])
 	print_mac ("Permanent MAC: ", mac_permanent);
 
 	/* Change the MAC */
-	mac_faked = mc_mac_dup (mac);
+    ret = mc_mac_dup (mac, &mac_faked);
+    if (ret != ret_ok) {
+        exit (EXIT_ERROR);
+    }
 
 	if (show) {
 		exit (EXIT_OK);
-	} else if (set_mac) {
-		if (mc_mac_read_string (mac_faked, set_mac) < 0) {
+	} else if (! chula_buffer_is_empty(&mac_to_set)) {
+        ret = mc_mac_read (mac_faked, &mac_to_set);
+        if (ret != ret_ok) {
 			exit (EXIT_ERROR);
-		}
+        }
 	} else if (random) {
 		mc_mac_random (mac_faked, 6, set_bia);
 	} else if (ending) {
@@ -235,14 +247,17 @@ main (int argc, char *argv[])
 		mc_maclist_set_random_vendor(mac_faked, mac_is_anykind);
 		mc_mac_random (mac_faked, 3, 1);
 	} else if (permanent) {
-		mac_faked = mc_mac_dup (mac_permanent);
+        ret = mc_mac_dup (mac_permanent, &mac_faked);
+        if (ret != ret_ok) {
+            exit (EXIT_ERROR);
+        }
 	} else {
 		exit (EXIT_OK); /* default to show */
 	}
 
 	/* Set the new MAC */
-	ret = mc_net_info_set_mac (net, mac_faked);
-	if (ret == 0) {
+	re = mc_net_info_set_mac (net, mac_faked);
+	if (re == 0) {
 		/* Re-read the MAC */
 		mc_mac_free (mac_faked);
 		mac_faked = mc_net_info_get_mac(net);
@@ -261,7 +276,7 @@ main (int argc, char *argv[])
 	mc_mac_free (mac_faked);
 	mc_mac_free (mac_permanent);
 	mc_net_info_free (net);
-	mc_maclist_free();
+	mc_maclists_mrproper();
 
-	return (ret == 0) ? EXIT_OK : EXIT_ERROR;
+	return (re == 0) ? EXIT_OK : EXIT_ERROR;
 }

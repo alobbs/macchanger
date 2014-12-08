@@ -23,9 +23,10 @@
  * USA
  */
 
-#ifndef __MAC_CHANGER_MAC_H__
-#define __MAC_CHANGER_MAC_H__
+#ifndef MAC_CHANGER_MAC_H
+#define MAC_CHANGER_MAC_H
 
+#include <libchula/libchula.h>
 
 typedef struct {
 	unsigned char byte[6];
@@ -37,14 +38,13 @@ typedef enum {
 	mac_is_others
 } mac_type_t;
 
+ret_t mc_mac_dup    (mac_t *mac, mac_t **copy);
+void  mc_mac_free   (mac_t *mac);
 
+ret_t mc_mac_read   (mac_t *mac, chula_buffer_t *buf);
+ret_t mc_mac_to_buf (mac_t *mac, chula_buffer_t *buf);
 
-int    mc_mac_read_string (mac_t *, char *);
-void   mc_mac_into_string (const mac_t *, char *);
+bool  mc_mac_equal  (mac_t *mac, mac_t *other);
+void  mc_mac_random (mac_t *mac, unsigned char last_n_bytes, char set_bia);
 
-int    mc_mac_equal       (const mac_t *, const mac_t *);
-mac_t *mc_mac_dup         (const mac_t *);
-void   mc_mac_free        (mac_t *);
-void   mc_mac_random      (mac_t *, unsigned char last_n_bytes, char set_bia);
-
-#endif /* __MAC_CHANGER_LISTA_H__ */
+#endif /* MAC_CHANGER_MAC_H */

@@ -29,115 +29,159 @@
 
 #include "maclist.h"
 
-card_mac_list_item_t *list_others   = NULL; /* IEEE OUI */
-card_mac_list_item_t *list_wireless = NULL; /* Wireless cards */
+chula_list_t list_others;   /* IEEE OUI */
+chula_list_t list_wireless; /* Wireless cards */
 
-int list_others_len   = 0;
-int list_wireless_len = 0;
-
-
-static char *
-mc_maclist_get_cardname_from_list (const mac_t *mac, card_mac_list_item_t *list)
+/* List entry
+ */
+static ret_t
+list_item_new (mac_list_item_t **mac_entry)
 {
-	int i = 0;
+    CHULA_GEN_NEW_STRUCT (mac,n,list_item);
 
-	while (list[i].name) {
-		if ((mac->byte[0] == list[i].byte[0]) &&
-		    (mac->byte[1] == list[i].byte[1]) &&
-		    (mac->byte[2] == list[i].byte[2]))
-		{
-			return list[i].name;
-		}
-		i++;
-	}
+    chula_list_init (&n->list);
+    chula_buffer_init (&n->name);
+    memset (&n->byte, 0, 3);
 
-	return NULL;
+    *mac_entry = n;
+    return ret_ok;
 }
 
-
-static char *
-mc_maclist_get_cardname (const mac_t *mac)
+static ret_t
+list_item_free (mac_list_item_t *mac_entry)
 {
-	char *name;
+    chula_buffer_mrproper (&mac_entry->name);
+    free (mac_entry);
+    return ret_ok;
+}
 
-	name = mc_maclist_get_cardname_from_list (mac, list_wireless);
+static chula_buffer_t *
+get_mac_name (mac_t *mac_in, chula_list_t *list)
+{
+    chula_list_t *i;
+
+    list_for_each (i,list) {
+        mac_list_item_t *mac = (mac_list_item_t *)i;
+
+		if ((mac_in->byte[0] == mac->byte[0]) &&
+		    (mac_in->byte[1] == mac->byte[1]) &&
+		    (mac_in->byte[2] == mac->byte[2])) {
+			return &mac->name;
+		}
+    }
+
+    return NULL;
+}
+
+static chula_buffer_t *
+mc_maclist_get_cardname (mac_t *mac)
+{
+	chula_buffer_t *name;
+
+	name = get_mac_name (mac, &list_wireless);
 	if (name) {
 		return name;
 	}
 
-	name = mc_maclist_get_cardname_from_list (mac, list_others);
-	return name;
+	return get_mac_name (mac, &list_others);
 }
 
 
 const char *
-mc_maclist_get_cardname_with_default (const mac_t *mac, const char *def)
+mc_maclist_get_cardname_with_default (mac_t *mac, const char *def)
 {
-	char *name;
-	name = mc_maclist_get_cardname (mac);
-	return name ? name : def;
+	chula_buffer_t *name;
+	name = mc_maclist_get_cardname(mac);
+	return name ? (const char *)name->buf : def;
 }
 
-static void
-mc_maclist_set_random_vendor_from_list (mac_t *mac, card_mac_list_item_t *list, int list_len)
-{
-	int i, num = list_len;
 
-	/* Choose one randomly */
-	num = random()%num;
+static ret_t
+mc_maclist_set_random_vendor_from_list (mac_t *mac, chula_list_t *list)
+{
+    ret_t  ret;
+    size_t len = 0;
+
+    /* Choose a random entry */
+    ret = chula_list_get_len (list, &len);
+    if (ret != ret_ok) return ret_error;
+
+	uint32_t num = chula_random() % len;
 
 	/* Copy the vendor MAC range */
-	for (i=0; i<3; i++) {
-		mac->byte[i] = list[num].byte[i];
+    while (num > 0) {
+        list = list->next;
+    }
+
+	for (int i=0; i<3; i++) {
+		mac->byte[i] = LIST_MAC_ITEM(list)->byte[i];
 	}
+
+    return ret_ok;
 }
 
 
 void
 mc_maclist_set_random_vendor (mac_t *mac, mac_type_t type)
 {
-	int num;
-
-	num = random() % ( list_others_len + list_wireless_len );
+	int    num;
+    ret_t  ret;
+    size_t len_wireless = 0;
+    size_t len_others   = 0;
 
 	switch (type) {
 	case mac_is_anykind:
-		if (num < list_others_len) {
-			mc_maclist_set_random_vendor_from_list (mac, list_others, list_others_len);
+        ret = chula_list_get_len (&list_others, &len_others);
+        if (ret != ret_ok) return;
+
+        ret = chula_list_get_len (&list_wireless, &len_wireless);
+        if (ret != ret_ok) return;
+
+        num = chula_random() % (len_others + len_wireless);
+        if (num < len_others) {
+			mc_maclist_set_random_vendor_from_list (mac, &list_others);
 		} else {
-			mc_maclist_set_random_vendor_from_list (mac, list_wireless, list_wireless_len);
+			mc_maclist_set_random_vendor_from_list (mac, &list_wireless);
 		}
 		break;
 	case mac_is_wireless:
-		mc_maclist_set_random_vendor_from_list (mac, list_wireless, list_wireless_len);
+		mc_maclist_set_random_vendor_from_list (mac, &list_wireless);
 		break;
 	case mac_is_others:
-		mc_maclist_set_random_vendor_from_list (mac, list_others, list_others_len);
+		mc_maclist_set_random_vendor_from_list (mac, &list_others);
 		break;
 	}
 }
 
 
-int
-mc_maclist_is_wireless (const mac_t *mac)
+bool
+mc_maclist_is_wireless (mac_t *mac)
 {
-	return (mc_maclist_get_cardname_from_list (mac, list_wireless) != NULL);
+    chula_buffer_t *name;
+    name = get_mac_name(mac, &list_wireless);
+    return (name != NULL);
 }
 
 
 static void
-mc_maclist_print_from_list (card_mac_list_item_t *list, const char *keyword)
+mc_maclist_print_from_list (chula_list_t *list, const char *keyword)
 {
-	int i = 0;
+    chula_list_t *i;
+    uint32_t      founds = 0;
 
-	while (list[i].name) {
-		if (!keyword || (keyword && strstr(list[i].name, keyword))) {
-			printf ("%04i - %02x:%02x:%02x - %s\n", i,
-				list[i].byte[0], list[i].byte[1],list[i].byte[2],
-				list[i].name);
-		}
-		i++;
-	}
+    list_for_each (i, list) {
+        mac_list_item_t *mac     = LIST_MAC_ITEM(i);
+        bool             matched = (keyword == NULL);
+
+        if (! matched) {
+            matched = (chula_strncasestr((const char *)mac->name.buf, keyword, mac->name.len) != NULL);
+            if (matched) {
+                founds++;
+                printf ("%04i - %02x:%02x:%02x - %s\n", founds,
+                        mac->byte[0], mac->byte[1], mac->byte[2], mac->name.buf);
+            }
+        }
+    }
 }
 
 
@@ -147,86 +191,98 @@ mc_maclist_print (const char *keyword)
 	printf ("Misc MACs:\n"
 		"Num    MAC        Vendor\n"
 		"---    ---        ------\n");
-	mc_maclist_print_from_list (list_others, keyword);
+	mc_maclist_print_from_list (&list_others, keyword);
 
 	printf ("\n"
 		"Wireless MACs:\n"
 		"Num    MAC        Vendor\n"
 		"---    ---        ------\n");
-	mc_maclist_print_from_list (list_wireless, keyword);
+	mc_maclist_print_from_list (&list_wireless, keyword);
 }
 
 
-static card_mac_list_item_t *
-mc_maclist_read_from_file (const char *fullpath, int *list_len)
+static ret_t
+read_maclist_file (char *path, chula_list_t *list)
 {
-	FILE *f;
-	char *line;
-	char  tmp[512];
-	int   num = 0;
-	card_mac_list_item_t *list;
+    ret_t          ret;
+    chula_buffer_t raw = CHULA_BUF_INIT;
 
-	if ((f = fopen(fullpath, "r")) == NULL) {
-		fprintf (stderr, "[ERROR] Could not read data file: %s\n", fullpath);
-		return NULL;
-	}
+    /* Read file */
+    ret = chula_buffer_read_file (&raw, path);
+    if (ret != ret_ok) {
+		fprintf (stderr, "[ERROR] Could not read data file: %s\n", path);
+        return ret_error;
+    }
 
-	/* Count lines */
-	while ((line = fgets (tmp, 511, f)) != NULL) num++;
-	rewind (f);
+    /* Parse */
+    while (! chula_buffer_is_empty(&raw)) {
+        char            *EOL;
+        mac_list_item_t *mac  = NULL;
+        const char      *line = (const char *)raw.buf;
 
-	/* Get mem */
-	list = (card_mac_list_item_t *) malloc (sizeof(card_mac_list_item_t) * (num+1));
+        EOL = chula_strchrnul (line, '\n');
+        *EOL = '\0';
 
-	/* Parse it */
-	num = 0;
-	while ((line = fgets (tmp, 511, f)) != NULL) {
-		list[num].byte[0] = (char) (strtoul (line, NULL, 16) & 0xFF);
-		list[num].byte[1] = (char) (strtoul (line+3, NULL, 16) & 0xFF);
-		list[num].byte[2] = (char) (strtoul (line+6, NULL, 16) & 0xFF);
+        ret = list_item_new (&mac);
+        if (unlikely (ret != ret_ok)) return ret;
 
-		line[strlen(line)-1] = '\0';
-		list[num].name = (char*)(strdup(line+9));
+        mac->byte[0] = (char)(strtoul (line,   NULL, 16) & 0xFF);
+		mac->byte[1] = (char)(strtoul (line+3, NULL, 16) & 0xFF);
+		mac->byte[2] = (char)(strtoul (line+6, NULL, 16) & 0xFF);
 
-		num ++;
-	}
+        ret = chula_buffer_add (&mac->name, line+9, strlen(line+9));
+        if (unlikely (ret != ret_ok)) {
+            list_item_free(mac);
+            goto error;
+        }
 
-	/* End of list */
-	list[num].byte[0] = list[num].byte[1] = list[num].byte[2] = 0;
-	list[num].name = NULL;
+        ret = chula_buffer_move_to_begin (&mac->name, strlen(line)+1);
+        if (unlikely (ret != ret_ok)) {
+            list_item_free(mac);
+            goto error;
+        }
 
-	fclose (f);
+        chula_list_add_tail (&mac->list, list);
+    }
 
-	*list_len = num;
-	return list;
+    chula_buffer_mrproper (&raw);
+    return ret_ok;
+
+ error:
+    chula_buffer_mrproper (&raw);
+    return ret_error;
 }
 
 
-int
-mc_maclist_init (void)
+ret_t
+mc_maclists_init (void)
 {
-	list_others = mc_maclist_read_from_file(LISTDIR "/OUI.list", &list_others_len);
-	list_wireless = mc_maclist_read_from_file(LISTDIR "/wireless.list", &list_wireless_len);
+    ret_t ret;
 
-	return (list_others && list_wireless)? 0 : -1;
+    ret = read_maclist_file (LISTDIR "/OUI.list", &list_others);
+    if (ret != ret_ok) return ret_error;
+
+    ret = read_maclist_file (LISTDIR "/wireless.list", &list_wireless);
+    if (ret != ret_ok) return ret_error;
+
+    return ret_ok;
 }
-
-
-static void
-free_list (card_mac_list_item_t *list)
-{
-	int i = 0;
-	while (list[i].name) {
-		free(list[i].name);
-		i++;
-	}
-	free(list);
-}
-
 
 void
-mc_maclist_free (void)
+mc_maclist_free (chula_list_t *list)
 {
-	free_list (list_others);
-	free_list (list_wireless);
+    chula_list_t *i, *tmp;
+
+    list_for_each_safe (i, tmp, list) {
+        chula_list_del(i);
+        list_item_free((mac_list_item_t *)i);
+    }
+}
+
+ret_t
+mc_maclists_mrproper (void)
+{
+    mc_maclist_free (&list_others);
+    mc_maclist_free (&list_wireless);
+    return ret_ok;
 }

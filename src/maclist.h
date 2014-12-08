@@ -23,24 +23,30 @@
  * USA
  */
 
-#ifndef __MAC_CHANGER_LIST_H__
-#define __MAC_CHANGER_LIST_H__
+#ifndef MAC_CHANGER_LIST_H
+#define MAC_CHANGER_LIST_H
+
+#include <libchula/libchula.h>
 
 #include "mac.h"
 
 typedef struct {
-	char          *name;
+    chula_list_t   list;
+    chula_buffer_t name;
 	unsigned char  byte[3];
-} card_mac_list_item_t;
+} mac_list_item_t;
 
-#define CARD_NAME(x)     mc_maclist_get_cardname_with_default(x, "unknown")
+#define LIST_MAC_ITEM(l) ((mac_list_item_t *)(l))
+#define CARD_NAME(x)     (mc_maclist_get_cardname_with_default(x, "unknown"))
 
-int    mc_maclist_init  (void);
-void   mc_maclist_free  (void);
+/* Global init */
+ret_t mc_maclists_init     (void);
+ret_t mc_maclists_mrproper (void);
 
-const char * mc_maclist_get_cardname_with_default (const mac_t *, const char *);
-void         mc_maclist_set_random_vendor         (mac_t *, mac_type_t);
-int          mc_maclist_is_wireless               (const mac_t *);
-void         mc_maclist_print                     (const char *keyword);
+/* MAC List */
+const char *mc_maclist_get_cardname_with_default (mac_t *mac, const char *);
+void        mc_maclist_set_random_vendor         (mac_t *mac, mac_type_t);
+bool        mc_maclist_is_wireless               (mac_t *mac);
+void        mc_maclist_print                     (const char *keyword);
 
-#endif /* __MAC_CHANGER_LIST_H__ */
+#endif /* MAC_CHANGER_LIST_H */

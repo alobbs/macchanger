@@ -31,14 +31,14 @@
 #include "mac.h"
 
 
-mac_t *
-mc_mac_dup (const mac_t *mac)
+ret_t
+mc_mac_dup (mac_t *src, mac_t **copy)
 {
-	mac_t *new;
+	*copy = (mac_t *)malloc(sizeof(mac_t));
+    if (unlikely (*copy == NULL)) return ret_nomem;
 
-	new = (mac_t *)malloc(sizeof(mac_t));
-	memcpy (new, mac, sizeof(mac_t));
-	return new;
+    memcpy (*copy, src, sizeof(mac_t));
+    return ret_ok;
 }
 
 
@@ -49,14 +49,18 @@ mc_mac_free (mac_t *mac)
 }
 
 
-void
-mc_mac_into_string (const mac_t *mac, char *s)
+ret_t
+mc_mac_to_buf (mac_t          *mac,
+               chula_buffer_t *buf)
 {
-	int i;
+    ret_t ret;
 
-	for (i=0; i<6; i++) {
-		sprintf (&s[i*3], "%02x%s", mac->byte[i], i<5?":":"");
+	for (int i=0; i<6; i++) {
+        ret = chula_buffer_add_va (buf, "%02x%s", mac->byte[i], i<5?":":"");
+        if (unlikely (ret != ret_ok)) return ret;
 	}
+
+    return ret_ok;
 }
 
 
@@ -92,42 +96,48 @@ mc_mac_random (mac_t *mac, unsigned char last_n_bytes, char set_bia)
 }
 
 
-int
-mc_mac_equal (const mac_t *mac1, const mac_t *mac2)
+bool
+mc_mac_equal (mac_t *mac1, mac_t *mac2)
 {
-	int i;
-
-	for (i=0; i<6; i++) {
+	for (int i=0; i<6; i++) {
 		if (mac1->byte[i] != mac2->byte[i]) {
-			return 0;
+			return false;
 		}
 	}
-	return 1;
+
+	return true;
 }
 
 
-int
-mc_mac_read_string (mac_t *mac, char *string)
+ret_t
+mc_mac_read (mac_t          *mac,
+             chula_buffer_t *buf)
 {
-	int nbyte = 5;
+    ret_t ret;
+	int   nbyte = 5;
 
 	/* Check the format */
-	if (strlen(string) != 17) {
-		fprintf (stderr, "[ERROR] Incorrect format: MAC length should be 17. %s(%lu)\n", string, strlen(string));
-		return -1;
+	if (buf->len != 17) {
+		fprintf (stderr, "[ERROR] Incorrect format: MAC length should be 17. %s(%u)\n", buf->buf, buf->len);
+        return ret_error;
 	}
 
 	for (nbyte=2; nbyte<16; nbyte+=3) {
-		if (string[nbyte] != ':') {
-			fprintf (stderr, "[ERROR] Incorrect format: %s\n", string);
-			return -1;
+		if (buf->buf[nbyte] != ':') {
+			fprintf (stderr, "[ERROR] Incorrect format: %s\n", buf->buf);
+            return ret_error;
 		}
 	}
 
 	/* Read the values */
 	for (nbyte=0; nbyte<6; nbyte++) {
-		mac->byte[nbyte] = (char) (strtoul(string+nbyte*3, 0, 16) & 0xFF);
+        long val = 0;
+
+        ret = chula_ahextol((const char*)&buf->buf[nbyte*3], &val);
+        if (unlikely (ret != ret_ok)) return ret;
+
+        mac->byte[nbyte] = (char)(val & 0xFF);
 	}
 
-	return 0;
+    return ret_ok;
 }
