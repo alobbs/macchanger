@@ -1,4 +1,4 @@
-AC_INIT([macchanger], [1.7.0])
+AC_INIT([macchanger], [1.8.0])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE
 
