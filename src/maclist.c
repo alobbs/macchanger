@@ -236,7 +236,7 @@ read_maclist_file (char *path, chula_list_t *list)
             goto error;
         }
 
-        ret = chula_buffer_move_to_begin (&mac->name, strlen(line)+1);
+        ret = chula_buffer_move_to_begin (&raw, strlen(line)+1);
         if (unlikely (ret != ret_ok)) {
             list_item_free(mac);
             goto error;
@@ -258,6 +258,9 @@ ret_t
 mc_maclists_init (void)
 {
     ret_t ret;
+
+    chula_list_init (&list_others);
+    chula_list_init (&list_wireless);
 
     ret = read_maclist_file (LISTDIR "/OUI.list", &list_others);
     if (ret != ret_ok) return ret_error;
