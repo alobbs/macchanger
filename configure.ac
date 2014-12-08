@@ -8,7 +8,7 @@ AM_CONFIG_HEADER(config.h)
 AC_SUBST(VERSION)
 
 AC_PROG_INSTALL
-AC_PROG_CC
+AC_PROG_CC_C99
 
 AC_CHECK_LIB(chula, chula_buffer_new)
 AC_CHECK_HEADER(libchula/libchula.h, ,
