@@ -23,24 +23,25 @@
  * USA
  */
 
-#ifndef __MAC_CHANGER_NETINFO_H__
-#define __MAC_CHANGER_NETINFO_H__
+#ifndef MAC_CHANGER_NETINFO_H
+#define MAC_CHANGER_NETINFO_H
+
+#include <libchula/libchula.h>
 
 #include <sys/socket.h>
 #include <net/if.h>
 #include "mac.h"
 
 typedef struct {
-	   int sock;
-	   struct ifreq dev;
+    int          sock;
+    struct ifreq dev;
 } net_info_t;
 
-net_info_t *mc_net_info_new     (const char *device);
-void        mc_net_info_free    (net_info_t *);
+ret_t mc_net_info_new  (net_info_t **net, const char *device);
+void  mc_net_info_free (net_info_t  *net);
 
-mac_t      *mc_net_info_get_mac (const net_info_t *);
-int         mc_net_info_set_mac (net_info_t *, const mac_t *);
+ret_t mc_net_info_set_mac      (net_info_t *net, mac_t  *mac);
+ret_t mc_net_info_get_mac      (net_info_t *net, mac_t **mac);
+ret_t mc_net_info_get_perm_mac (net_info_t *net, mac_t **mac);
 
-mac_t      *mc_net_info_get_permanent_mac (const net_info_t *);
-
-#endif /* __MAC_CHANGER_NETINFO_H__ */
+#endif /* MAC_CHANGER_NETINFO_H */

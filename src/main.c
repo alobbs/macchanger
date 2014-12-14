@@ -124,14 +124,14 @@ main (int argc, char *argv[])
 		{NULL, 0, NULL, 0}
 	};
 
-	net_info_t *net;
-	mac_t      *mac;
-	mac_t      *mac_permanent;
-	mac_t      *mac_faked;
-	char       *device_name;
-	int         val;
-	ret_t       ret;
 	int         re;
+	ret_t       ret;
+	int         val;
+	net_info_t *net           = NULL;
+	mac_t      *mac           = NULL;
+    mac_t      *mac_permanent = NULL;
+	mac_t      *mac_faked     = NULL;
+	char       *device_name   = NULL;
 
 	/* Read the parameters */
 	while ((val = getopt_long (argc, argv, "VasAbrephlm:", long_options, NULL)) != -1) {
@@ -139,7 +139,7 @@ main (int argc, char *argv[])
 		case 'V':
 			printf ("GNU MAC changer %s\n"
 				"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"
-				"Copyright (C) 2003,2013 Alvaro Lopez Ortega <alvaro@gnu.org>.\n"
+				"Copyright (C) 2003,2015 Alvaro Lopez Ortega <alvaro@gnu.org>.\n"
 				"This is free software; see the source for copying conditions.  There is NO\n"
 				"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
 				VERSION);
@@ -207,11 +207,16 @@ main (int argc, char *argv[])
 	chula_random_seed();
 
 	/* Read the MAC */
-	if ((net = mc_net_info_new(device_name)) == NULL) {
+    ret = mc_net_info_new (&net, device_name);
+    if (ret != ret_ok) {
 		exit (EXIT_ERROR);
 	}
-	mac = mc_net_info_get_mac(net);
-	mac_permanent = mc_net_info_get_permanent_mac(net);
+
+    ret  = mc_net_info_get_mac (net, &mac);
+    ret |= mc_net_info_get_perm_mac (net, &mac_permanent);
+    if (ret != ret_ok) {
+		exit (EXIT_ERROR);
+    }
 
 	/* --bia can only be used with --random */
 	if (set_bia  &&  !random) {
@@ -260,14 +265,16 @@ main (int argc, char *argv[])
 	if (re == 0) {
 		/* Re-read the MAC */
 		mc_mac_free (mac_faked);
-		mac_faked = mc_net_info_get_mac(net);
+
+        ret = mc_net_info_get_mac (net, &mac_faked);
+        if (ret != ret_ok) exit (EXIT_ERROR);
 
 		/* Print it */
 		print_mac ("New MAC:       ", mac_faked);
 
 		/* Is the same MAC? */
 		if (mc_mac_equal (mac, mac_faked)) {
-			printf ("It's the same MAC!!\n");
+			printf ("[WARNING] It is the same MAC\n");
 		}
 	}
 

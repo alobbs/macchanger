@@ -34,28 +34,33 @@
 
 #include "netinfo.h"
 
-
-net_info_t *
-mc_net_info_new (const char *device)
+ret_t
+mc_net_info_new (net_info_t **net, const char *device)
 {
-	net_info_t *new = (net_info_t *) malloc (sizeof(net_info_t));
+    int re;
+    CHULA_GEN_NEW_STRUCT (net,n,info);
 
-	new->sock = socket (AF_INET, SOCK_DGRAM, 0);
-	if (new->sock<0) {
+	n->sock = socket (AF_INET, SOCK_DGRAM, 0);
+	if (n->sock<0) {
 		perror ("[ERROR] Socket");
-		free(new);
-		return NULL;
+        goto error;
 	}
 
-	strncpy (new->dev.ifr_name, device, sizeof(new->dev.ifr_name));
-	new->dev.ifr_name[sizeof(new->dev.ifr_name)-1] = '\0';
-	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
+	strncpy (n->dev.ifr_name, device, sizeof(n->dev.ifr_name));
+	n->dev.ifr_name[sizeof(n->dev.ifr_name)-1] = '\0';
+
+    re = ioctl(n->sock, SIOCGIFHWADDR, &n->dev);
+	if (re < 0) {
 		perror ("[ERROR] Set device name");
-		free(new);
-		return NULL;
+        goto error;
 	}
 
-	return new;
+    *net = n;
+    return ret_ok;
+
+ error:
+    free (n);
+    return ret_error;
 }
 
 
@@ -67,62 +72,81 @@ mc_net_info_free (net_info_t *net)
 }
 
 
-mac_t *
-mc_net_info_get_mac (const net_info_t *net)
+ret_t
+mc_net_info_set_mac (net_info_t *net, mac_t *mac)
 {
-	int    i;
-	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
+	int re;
 
-	for (i=0; i<6; i++) {
-		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
-	}
-
-	return new;
-}
-
-
-int
-mc_net_info_set_mac (net_info_t *net, const mac_t *mac)
-{
-	int i;
-
-	for (i=0; i<6; i++) {
+	for (int i=0; i<6; i++) {
 		net->dev.ifr_hwaddr.sa_data[i] = mac->byte[i];
 	}
 
-	if (ioctl(net->sock, SIOCSIFHWADDR, &net->dev) < 0) {
+    re = ioctl(net->sock, SIOCSIFHWADDR, &net->dev);
+	if (re < 0) {
 		perror ("[ERROR] Could not change MAC: interface up or insufficient permissions");
-		return -1;
+		return ret_error;
 	}
 
-	return 0;
+	return ret_ok;
 }
 
-mac_t *
-mc_net_info_get_permanent_mac (const net_info_t *net)
+
+ret_t
+mc_net_info_get_mac (net_info_t *net, mac_t **mac)
 {
-	int                       i;
-	struct ifreq              req;
-	struct ethtool_perm_addr *epa;
-	mac_t                    *newmac;
+	*mac = (mac_t *) calloc (1, sizeof(mac_t));
+    if (unlikely (*mac == NULL)) return ret_nomem;
 
-	newmac = (mac_t *) calloc (1, sizeof(mac_t));
-
-	epa = (struct ethtool_perm_addr*) malloc(sizeof(struct ethtool_perm_addr) + IFHWADDRLEN);
-	epa->cmd = ETHTOOL_GPERMADDR;
-	epa->size = IFHWADDRLEN;
-
-	memcpy(&req, &(net->dev), sizeof(struct ifreq));
-	req.ifr_data = (caddr_t)epa;
-
-	if (ioctl(net->sock, SIOCETHTOOL, &req) < 0) {
-		perror ("[ERROR] Could not read permanent MAC");
-	} else {
-		for (i=0; i<6; i++) {
-			newmac->byte[i] = epa->data[i];
-		}
+	for (int i=0; i<6; i++) {
+		(*mac)->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
 	}
 
+	return ret_ok;
+}
+
+
+ret_t
+mc_net_info_get_perm_mac (net_info_t *net, mac_t **mac)
+{
+	int                       re;
+	struct ifreq              req;
+	struct ethtool_perm_addr *epa;
+
+    /* Memory allocation */
+    epa = (struct ethtool_perm_addr *) calloc(1, sizeof(struct ethtool_perm_addr) + IFHWADDRLEN);
+    if (unlikely (epa == NULL)) {
+        return ret_nomem;
+    }
+
+	*mac = (mac_t *) calloc (1, sizeof(mac_t));
+    if (unlikely (*mac == NULL)) {
+        free (epa);
+        return ret_nomem;
+    }
+
+    /* Data structures set up */
+	epa->cmd  = ETHTOOL_GPERMADDR;
+	epa->size = IFHWADDRLEN;
+
+	memcpy (&req, &net->dev, sizeof(struct ifreq));
+	req.ifr_data = (caddr_t)epa;
+
+    /* Syscall */
+    re = ioctl (net->sock, SIOCETHTOOL, &req);
+	if (re < 0) {
+		perror ("[ERROR] Could not read permanent MAC");
+        goto error;
+	}
+
+    /* Copy MAC address */
+    for (int i=0; i<6; i++) {
+        (*mac)->byte[i] = epa->data[i];
+    }
+
 	free(epa);
-	return newmac;
+	return ret_ok;
+
+ error:
+    free (epa);
+    return ret_error;
 }

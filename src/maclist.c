@@ -224,7 +224,9 @@ read_maclist_file (char *path, chula_list_t *list)
         *EOL = '\0';
 
         ret = list_item_new (&mac);
-        if (unlikely (ret != ret_ok)) return ret;
+        if (unlikely (ret != ret_ok)) {
+            goto error;
+        }
 
         mac->byte[0] = (char)(strtoul (line,   NULL, 16) & 0xFF);
 		mac->byte[1] = (char)(strtoul (line+3, NULL, 16) & 0xFF);
