@@ -56,8 +56,8 @@ print_help (void)
 		"  -A                            Set random vendor MAC of any kind\n"
 		"  -p,  --permanent              Reset to original, permanent hardware MAC\n"
 		"  -r,  --random                 Set fully random MAC\n"
+		"    -b,  --bia                    Random MAC should appear to be a burned-in-address\n"
 		"  -l,  --list[=keyword]         Print known vendors\n"
-		"  -b,  --bia                    Pretend to be a burned-in-address\n"
 		"  -m,  --mac=XX:XX:XX:XX:XX:XX  Set the MAC XX:XX:XX:XX:XX:XX\n\n"
 		"Report bugs to https://github.com/alobbs/macchanger/issues\n");
 }
@@ -227,7 +227,8 @@ main (int argc, char *argv[])
 
 	/* --bia can only be used with --random */
 	if (set_bia  &&  !random) {
-		fprintf (stderr, "[WARNING] Ignoring --bia option that can only be used with --random\n");
+		fprintf (stderr, "[WARNING] Ignoring --bia option that only makes sense with --random;\n"
+		                 "    non-random vendor MACs are already marked as burned-in-address.\n");
 	}
 
 	/* Print the current MAC info */

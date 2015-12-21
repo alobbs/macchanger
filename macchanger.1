@@ -60,15 +60,15 @@ Set random vendor MAC of any kind.
 .B \-r, \-\-random
 Set fully random MAC.
 .TP
+.B \-b, \-\-bia
+When setting fully random MAC, pretend to be a burned-in-address. If not used,
+the MAC will have the locally-administered bit set.
+.TP
 .B \-p, \-\-permanent
 Reset MAC address to its original, permanent hardware value.
 .TP
 .B \-l, \-\-list[=keyword]
 Print known vendors (with keyword in the vendor's description string).
-.TP
-.B \-b, \-\-bia
-When setting fully random MAC pretend to be a burned-in-address. If not used,
-the MAC will have the locally-administered bit set.
 .TP
 .B \-m, \-\-mac XX:XX:XX:XX:XX:XX, \-\-mac=XX:XX:XX:XX:XX:XX
 Set the MAC XX:XX:XX:XX:XX:XX.
