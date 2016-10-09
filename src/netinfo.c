@@ -33,12 +33,13 @@
 #include <linux/sockios.h>
 
 #include "netinfo.h"
+#include "common.h"
 
 
 net_info_t *
 mc_net_info_new (const char *device)
 {
-	net_info_t *new = (net_info_t *) malloc (sizeof(net_info_t));
+	net_info_t *new = (net_info_t *) xmalloc (sizeof(net_info_t));
 
 	new->sock = socket (AF_INET, SOCK_DGRAM, 0);
 	if (new->sock<0) {
@@ -71,7 +72,7 @@ mac_t *
 mc_net_info_get_mac (const net_info_t *net)
 {
 	int    i;
-	mac_t *new = (mac_t *) malloc (sizeof(mac_t));
+	mac_t *new = (mac_t *) xmalloc (sizeof(mac_t));
 
 	for (i=0; i<6; i++) {
 		new->byte[i] = net->dev.ifr_hwaddr.sa_data[i] & 0xFF;
@@ -106,9 +107,9 @@ mc_net_info_get_permanent_mac (const net_info_t *net)
 	struct ethtool_perm_addr *epa;
 	mac_t                    *newmac;
 
-	newmac = (mac_t *) calloc (1, sizeof(mac_t));
+	newmac = (mac_t *) xcalloc (1, sizeof(mac_t));
 
-	epa = (struct ethtool_perm_addr*) malloc(sizeof(struct ethtool_perm_addr) + IFHWADDRLEN);
+	epa = (struct ethtool_perm_addr*) xmalloc(sizeof(struct ethtool_perm_addr) + IFHWADDRLEN);
 	epa->cmd = ETHTOOL_GPERMADDR;
 	epa->size = IFHWADDRLEN;
 
