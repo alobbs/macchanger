@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "mac.h"
+#include "common.h"
 
 
 mac_t *
@@ -36,7 +37,7 @@ mc_mac_dup (const mac_t *mac)
 {
 	mac_t *new;
 
-	new = (mac_t *)malloc(sizeof(mac_t));
+	new = (mac_t *)xmalloc(sizeof(mac_t));
 	memcpy (new, mac, sizeof(mac_t));
 	return new;
 }
@@ -113,13 +114,13 @@ mc_mac_read_string (mac_t *mac, char *string)
 
 	/* Check the format */
 	if (strlen(string) != 17) {
-		fprintf (stderr, "[ERROR] Incorrect format: MAC length should be 17. %s(%lu)\n", string, strlen(string));
+		error ("Incorrect format: MAC length should be 17. %s(%lu)", string, strlen(string));
 		return -1;
 	}
 
 	for (nbyte=2; nbyte<16; nbyte+=3) {
 		if (string[nbyte] != ':') {
-			fprintf (stderr, "[ERROR] Incorrect format: %s\n", string);
+			error ("Incorrect format: %s", string);
 			return -1;
 		}
 	}

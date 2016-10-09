@@ -39,6 +39,7 @@
 #include "mac.h"
 #include "maclist.h"
 #include "netinfo.h"
+#include "common.h"
 
 #define EXIT_OK    0
 #define EXIT_ERROR 1
@@ -227,7 +228,7 @@ main (int argc, char *argv[])
 
 	/* --bia can only be used with --random */
 	if (set_bia  &&  !random) {
-		fprintf (stderr, "[WARNING] Ignoring --bia option that can only be used with --random\n");
+		warning ("Ignoring --bia option that can only be used with --random");
 	}
 
 	/* Print the current MAC info */

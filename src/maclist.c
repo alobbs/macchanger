@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "maclist.h"
+#include "common.h"
 
 card_mac_list_item_t *list_others   = NULL; /* IEEE OUI */
 card_mac_list_item_t *list_wireless = NULL; /* Wireless cards */
@@ -167,7 +168,7 @@ mc_maclist_read_from_file (const char *fullpath, int *list_len)
 	card_mac_list_item_t *list;
 
 	if ((f = fopen(fullpath, "r")) == NULL) {
-		fprintf (stderr, "[ERROR] Could not read data file: %s\n", fullpath);
+		error ("Could not read data file: %s", fullpath);
 		return NULL;
 	}
 
@@ -176,7 +177,7 @@ mc_maclist_read_from_file (const char *fullpath, int *list_len)
 	rewind (f);
 
 	/* Get mem */
-	list = (card_mac_list_item_t *) malloc (sizeof(card_mac_list_item_t) * (num+1));
+	list = (card_mac_list_item_t *) xmalloc (sizeof(card_mac_list_item_t) * (num+1));
 
 	/* Parse it */
 	num = 0;
