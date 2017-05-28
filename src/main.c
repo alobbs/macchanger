@@ -192,7 +192,7 @@ main (int argc, char *argv[])
 		case '?':
 		default:
 			print_help();
-			exit (EXIT_OK);
+			exit (EXIT_ERROR);
 			break;
 		}
 	}
