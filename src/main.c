@@ -211,7 +211,7 @@ main (int argc, char *argv[])
 	/* Get device name argument */
 	if (optind >= argc) {
 		print_usage();
-		exit (EXIT_OK);
+		exit (EXIT_ERROR);
 	}
 	device_name = argv[optind];
 
