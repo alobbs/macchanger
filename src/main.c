@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "mac.h"
 #include "maclist.h"
@@ -42,6 +43,8 @@
 
 #define EXIT_OK    0
 #define EXIT_ERROR 1
+#define STOP_NET_MAN "systemctl stop NetworkManager.service"
+#define START_NET_MAN "systemctl start NetworkManager.service"
 
 static void
 print_help (void)
@@ -107,6 +110,25 @@ random_seed (void)
 
 	srandom(seed);
 }
+
+
+static void 
+network_manager_service(const char *STAT_NET_MAN){
+	FILE *pfs ;
+
+	// Stop and Start NetworkManager Service 
+    pfs = popen(STAT_NET_MAN,"r");
+    // sleep 2 sec
+    sleep(2);
+    if(strcmp(STAT_NET_MAN,"systemctl stop NetworkManager.service") == 0){
+        printf("[-] NetworkManager.service is stoped \n");
+    }else{
+        printf("[+] NetworkManager.service is started \n");
+    }
+    
+	pclose(pfs);
+    return ;
+  }
 
 
 int
@@ -215,11 +237,23 @@ main (int argc, char *argv[])
 	}
 	device_name = argv[optind];
 
+	/* Tell user to run app as root */
+    if(geteuid() != 0)
+    {
+        printf("you must be root privileges !!!");
+		exit (EXIT_ERROR);
+    }
+
+    /* Stop NetworkManager Service */
+	network_manager_service(STOP_NET_MAN);
+
 	/* Seed a random number generator */
 	random_seed();
 
 	/* Read the MAC */
 	if ((net = mc_net_info_new(device_name)) == NULL) {
+		/* Start NetworkManager Service */
+	    network_manager_service(START_NET_MAN);
 		exit (EXIT_ERROR);
 	}
 	mac = mc_net_info_get_mac(net);
@@ -227,6 +261,8 @@ main (int argc, char *argv[])
 
 	/* --bia can only be used with --random */
 	if (set_bia  &&  !random) {
+		/* Start NetworkManager Service */
+	    network_manager_service(START_NET_MAN);
 		fprintf (stderr, "[WARNING] Ignoring --bia option that can only be used with --random\n");
 	}
 
@@ -238,9 +274,13 @@ main (int argc, char *argv[])
 	mac_faked = mc_mac_dup (mac);
 
 	if (show) {
+		/* Start NetworkManager Service */
+	    network_manager_service(START_NET_MAN);
 		exit (EXIT_OK);
 	} else if (set_mac) {
 		if (mc_mac_read_string (mac_faked, set_mac) < 0) {
+			/* Start NetworkManager Service */
+	        network_manager_service(START_NET_MAN);
 			exit (EXIT_ERROR);
 		}
 	} else if (random) {
@@ -257,6 +297,8 @@ main (int argc, char *argv[])
 	} else if (permanent) {
 		mac_faked = mc_mac_dup (mac_permanent);
 	} else {
+		/* Start NetworkManager Service */
+	    network_manager_service(START_NET_MAN);
 		exit (EXIT_OK); /* default to show */
 	}
 
@@ -275,6 +317,9 @@ main (int argc, char *argv[])
 			printf ("It's the same MAC!!\n");
 		}
 	}
+	
+	/* Start NetworkManager Service */
+	network_manager_service(START_NET_MAN);
 
 	/* Memory free */
 	mc_mac_free (mac);
