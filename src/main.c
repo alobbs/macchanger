@@ -120,10 +120,10 @@ network_manager_service(const char *STAT_NET_MAN){
     pfs = popen(STAT_NET_MAN,"r");
     // sleep 2 sec
     sleep(2);
-    if(strcmp(START_NET_MAN,"systemctl stop NetworkManager.service") == 0){
-        printf("[*] NetworkManager.service is stoped \n");
+    if(strcmp(STAT_NET_MAN,"systemctl stop NetworkManager.service") == 0){
+        printf("[-] NetworkManager.service is stoped \n");
     }else{
-        printf("[*] NetworkManager.service is started \n");
+        printf("[+] NetworkManager.service is started \n");
     }
     
 	pclose(pfs);
