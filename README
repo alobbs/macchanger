@@ -1,5 +1,6 @@
 GNU MAC Changer
 ===============
+![GitHub CI badge](https://github.com/alobbs/macchanger/workflows/ci_ubuntu_latest/badge.svg)
 
 GNU MAC Changer is an utility that makes the maniputation of MAC
 addresses of network interfaces easier.
