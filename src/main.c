@@ -197,6 +197,12 @@ main (int argc, char *argv[])
 		}
 	}
 
+	/* no arguments were processed */
+	if (optind == 1) {
+		print_help();
+		exit (EXIT_ERROR);
+	}
+
 	/* Read the MAC lists */
 	if (mc_maclist_init() < 0) {
 		exit (EXIT_ERROR);
@@ -210,8 +216,8 @@ main (int argc, char *argv[])
 
 	/* Get device name argument */
 	if (optind >= argc) {
-		print_usage();
-		exit (EXIT_OK);
+		fprintf (stderr, "[ERROR] Network device name is required.\n");
+		exit (EXIT_ERROR);
 	}
 	device_name = argv[optind];
 
