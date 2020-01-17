@@ -29,6 +29,7 @@ config.h.in
 config.log
 config.status
 configure
+compile
 .deps
 stamp-h1
 
