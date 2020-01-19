@@ -63,7 +63,7 @@ mc_mac_into_string (const mac_t *mac, char *s)
 void
 mc_mac_random (mac_t *mac, unsigned char last_n_bytes, char set_bia)
 {
-	/* The LSB of first octet can not be set.  Those are musticast
+	/* The LSB of first octet can not be set.  Those are multicast
 	 * MAC addresses and not allowed for network device:
 	 * x1:, x3:, x5:, x7:, x9:, xB:, xD: and xF:
 	 */
