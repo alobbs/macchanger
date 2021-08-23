@@ -27,7 +27,7 @@ from string import split, join, capitalize
 import urllib2
 
 SLASHES = '|/-\\'
-URL     = 'http://standards.ieee.org/regauth/oui/oui.txt'
+URL     = 'http://standards-oui.ieee.org/oui/oui.txt'
 OUTPUT  = 'OUI.list'
 
 def download ():
